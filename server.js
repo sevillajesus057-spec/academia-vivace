@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const multer = require('multer');
 const db = require('./database');
 
 const app = express();
@@ -12,6 +13,18 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Configuración de Multer para guardar las fotos tomadas con la cámara o galería
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, 'public/uploads'));
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'estudiante-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
 
 app.use(session({
     secret: 'clave_secreta_academia_vivace_2026',
@@ -208,10 +221,8 @@ app.get('/admin', requerirAuthAdmin, (req, res) => {
                     const totalIngresosVES = totalIngresosUSD * tasaBCV;
                     const totalIvaDebitoVES = 0.00;
 
-                    // --- CÁLCULO DINÁMICO DE CAJA SEGÚN INGRESOS REALES Y EGRESOS ---
                     const totalEgresosUSDCalc = egresos.reduce((acc, e) => acc + (e.monto_usd || 0), 0);
                     const saldoCajaUSD = Math.max(0, totalIngresosUSD - totalEgresosUSDCalc);
-                    // -------------------------------------------------------------
 
                     const cobrosPorRevisar = cobros.filter(c => c.estatus === 'Revision').map(c => {
                         const est = estudiantes.find(e => e.id === c.id_estudiante);
@@ -286,8 +297,13 @@ app.get('/admin', requerirAuthAdmin, (req, res) => {
     }
 });
 
-app.post('/admin/agregar-estudiante', requerirAuthAdmin, (req, res) => {
-    const { nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto, direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumento, nivel, observaciones_medicas } = req.body;
+// Ruta actualizada para agregar estudiante procesando la foto con Multer (cámara o archivo)
+app.post('/admin/agregar-estudiante', requerirAuthAdmin, upload.single('foto'), (req, res) => {
+    const { nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumento, nivel, observaciones_medicas } = req.body;
+    
+    // Si se subió una foto con la cámara o archivo, guardamos su ruta web; si no, queda en null
+    const foto = req.file ? '/uploads/' + req.file.filename : (req.body.foto || null);
+    
     const codigo_qr = 'VIVACE-' + Date.now();
     const mesAnio = getMesAnioActual();
     const nombreMes = getNombreMesActual();
