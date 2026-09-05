@@ -1,0 +1,111 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.login-body {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    background: #ffffff;
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.logo-box {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-box h1 {
+    color: #1e3c72;
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.logo-box p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.login-form h2 {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.instruction {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.4rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: #2a5298;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #2a5298;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #1e3c72;
+}
+
+.error-alert {
+    background-color: #ffe0e0;
+    color: #d8000c;
+    padding: 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}/* Estilos para el nuevo logo */
+.academy-logo {
+    max-width: 250px; /* Ajusta este valor según el tamaño de tu logo */
+    height: auto;
+    margin-bottom: 1rem; /* Espacio entre el logo y el título */
+    display: block; /* Centra la imagen */
+    margin-left: auto;
+    margin-right: auto;
+}

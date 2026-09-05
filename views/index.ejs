@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal del Representante - Academia Vivace</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1.5rem; }
+        .card-login { background: white; width: 100%; max-width: 450px; padding: 2.5rem 2rem; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); text-align: center; }
+        .logo-login { max-width: 200px; height: auto; margin-bottom: 1rem; }
+        .title-login { color: #1e3c72; font-size: 1.6rem; margin-bottom: 0.4rem; }
+        .desc-login { color: #666; font-size: 0.9rem; margin-bottom: 1.8rem; }
+        .form-group { text-align: left; margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-weight: bold; font-size: 0.88rem; color: #444; margin-bottom: 0.4rem; }
+        .form-group input { width: 100%; padding: 12px 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+        .form-group input:focus { border-color: #1e3c72; }
+        .btn-ingresar { background: #1e3c72; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .btn-ingresar:hover { background: #162c54; }
+        .alert-error { background: #fdedec; color: #c0392b; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1rem; border: 1px solid #f5c6cb; }
+        .link-admin { display: inline-block; margin-top: 1.5rem; color: #1e3c72; text-decoration: none; font-size: 0.85rem; font-weight: bold; }
+        .link-admin:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="card-login">
+        <img src="/img/logo_vivace.png" alt="Academia Vivace" class="logo-login">
+        <h1 class="title-login">Portal del Representante</h1>
+        <p class="desc-login">Consulta la solvencia de tu representado y reporta tus pagos móviles.</p>
+
+        <% if (error) { %>
+            <div class="alert-error"><%= error %></div>
+        <% } %>
+
+        <form action="/representante/login" method="POST">
+            <div class="form-group">
+                <label for="busqueda">Cédula o Correo Electrónico del Representante</label>
+                <input type="text" id="busqueda" name="busqueda" placeholder="Ej: V-15123456 o correo@ejemplo.com" required>
+            </div>
+            <button type="submit" class="btn-ingresar">Ingresar al Portal</button>
+        </form>
+
+        <a href="/admin" class="link-admin">🔐 Acceso al Panel Administrativo</a>
+    </div>
+
+</body>
+</html>

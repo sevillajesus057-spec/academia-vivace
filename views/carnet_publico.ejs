@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carnet Digital - Academia Vivace</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background: #eef2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 1rem; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+
+    <div style="background: white; border-radius: 16px; overflow: hidden; max-width: 400px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #ddd;">
+        
+        <!-- ENCABEZADO DEL CARNET -->
+        <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 1.5rem; text-align: center; color: white;">
+            <img src="/img/logo_vivace.png" alt="Logo Vivace" style="height: 55px; background: white; padding: 5px; border-radius: 8px; margin-bottom: 0.5rem;">
+            <h2 style="margin: 0; font-size: 1.2rem;">Academia de Música Vivace</h2>
+            <p style="margin: 2px 0 0 0; font-size: 0.8rem; opacity: 0.8;">Carnet Identificativo del Estudiante</p>
+        </div>
+
+        <!-- FOTO Y ESTATUS -->
+        <div style="text-align: center; margin-top: -30px;">
+            <img src="<%= estudiante.foto || '/img/logo_vivace.png' %>" alt="Foto Estudiante" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid white; object-fit: cover; background: #eee;">
+            <div style="margin-top: 5px;">
+                <% if (estatusCarnet === 'ACTIVO') { %>
+                    <span style="background: #27ae60; color: white; padding: 4px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🟢 ESTUDIANTE ACTIVO</span>
+                <% } else { %>
+                    <span style="background: #e74c3c; color: white; padding: 4px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">🔴 INACTIVO (MOROSO)</span>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- DATOS DEL ALUMNO -->
+        <div style="padding: 1.5rem;">
+            <h2 style="text-align: center; color: #1e3c72; margin: 0 0 0.2rem 0; font-size: 1.4rem;"><%= estudiante.nombre_estudiante %></h2>
+            <p style="text-align: center; color: #666; margin: 0 0 1rem 0; font-weight: bold; font-size: 0.9rem;">Cátedra: <%= estudiante.instrumento %> (<%= estudiante.nivel %>)</p>
+
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; font-size: 0.88rem; margin-bottom: 1rem;">
+                <p style="margin: 0 0 0.4rem 0;"><strong>Cédula:</strong> <%= estudiante.cedula_estudiante || 'V/E' %></p>
+                <p style="margin: 0 0 0.4rem 0;"><strong>Edad:</strong> <%= estudiante.edad || 'N/R' %> años</p>
+                <p style="margin: 0;"><strong>Tipo de Sangre:</strong> <span style="color: #c0392b; font-weight: bold;"><%= estudiante.tipo_sangre || 'ORH+' %></span></p>
+            </div>
+
+            <!-- FICHA DE EMERGENCIA Y CONTACTO DE REPRESENTANTE -->
+            <div style="border-top: 2px dashed #eee; padding-top: 1rem;">
+                <h4 style="color: #c0392b; margin: 0 0 0.5rem 0; font-size: 0.95rem;">📞 CONTACTO DE EMERGENCIA</h4>
+                <p style="margin: 0 0 0.3rem 0; font-size: 0.9rem;"><strong>Representante:</strong> <%= estudiante.nombre_representante %> (<%= estudiante.parentesco || 'Representante' %>)</p>
+                <p style="margin: 0 0 0.3rem 0; font-size: 0.9rem;"><strong>Teléfono:</strong> <a href="tel:<%= estudiante.telefono_representante %>" style="color: #27ae60; font-weight: bold; text-decoration: none;"><%= estudiante.telefono_representante || 'No registrado' %></a></p>
+                <p style="margin: 0; font-size: 0.85rem; color: #555;"><strong>Observaciones Médicas:</strong> <%= estudiante.observaciones_medicas || 'Ninguna registrada' %></p>
+            </div>
+        </div>
+
+        <div style="background: #f1f1f1; padding: 0.8rem; text-align: center; font-size: 0.75rem; color: #777;">
+            Academia de Música Vivace • J-508106830
+        </div>
+    </div>
+
+</body>
+</html>

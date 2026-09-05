@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal del Representante - Academia Vivace</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { padding: 2rem; background: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card { background: white; padding: 2rem; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+        .badge-bcv { background: #e8f4fd; color: #1e3c72; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border: 1px solid #b2d7f5; }
+        .table-custom { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .table-custom th { background: #1e3c72; color: white; text-align: left; padding: 10px; font-size: 0.85rem; }
+        .table-custom td { padding: 10px; border-bottom: 1px solid #eee; font-size: 0.85rem; }
+        .badge-pagado { background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; }
+        .badge-pendiente { background: #f8d7da; color: #721c24; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; }
+        .badge-revision { background: #fff3cd; color: #856404; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; }
+        .btn-volver { background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+        .btn-volver:hover { background: #5a6268; }
+        .form-reporte { background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 0.8rem; border: 1px solid #ddd; }
+        .form-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.8rem; }
+        .form-group label { font-weight: bold; font-size: 0.82rem; color: #444; }
+        .form-group input { padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; }
+        .btn-submit { background: #27ae60; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .btn-submit:hover { background: #219150; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="/" class="btn-volver">⬅ Salir / Buscar Otro Estudiante</a>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h1 style="color: #1e3c72; margin: 0;">Portal del Representante</h1>
+                    <p style="color: #666; margin: 0.3rem 0 0 0;">Estado de cuenta y reporte de pagos móviles</p>
+                </div>
+                <div>
+                    <span class="badge-bcv">Tasa BCV Oficial: <%= Number(tasaBCV).toFixed(2) %> Bs/$</span>
+                </div>
+            </div>
+        </div>
+
+        <% if (estudiantes && estudiantes.length > 0) { %>
+            <% estudiantes.forEach(est => { %>
+                <div class="card">
+                    <h2 style="color: #1e3c72; margin-bottom: 0.2rem;"><%= est.nombre_estudiante %></h2>
+                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Representante: <strong><%= est.nombre_representante %></strong> | 
+                        Cátedra: <strong><%= est.instrumento %></strong> (<%= est.nivel %>)
+                    </p>
+
+                    <h3 style="color: #1e3c72; font-size: 1rem; margin-top: 1rem;">Estado de Cuenta y Mensualidades</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th>Monto ($)</th>
+                                    <th>Equivalente (Bs.)</th>
+                                    <th>Estatus</th>
+                                    <th>Acción / Reportar Pago Móvil</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (est.cobrosHistorial && est.cobrosHistorial.length > 0) { %>
+                                    <% est.cobrosHistorial.forEach(c => { 
+                                        const montoBs = (Number(c.monto_usd) * tasaBCV).toFixed(2);
+                                    %>
+                                        <tr>
+                                            <td><strong><%= c.concepto %></strong></td>
+                                            <td>$<%= Number(c.monto_usd).toFixed(2) %></td>
+                                            <td style="color: #27ae60; font-weight: bold;"><%= montoBs %> Bs.</td>
+                                            <td>
+                                                <% if (c.estatus === 'Pagado') { %>
+                                                    <span class="badge-pagado">PAGADO</span>
+                                                <% } else if (c.estatus === 'Revision') { %>
+                                                    <span class="badge-revision">EN REVISIÓN</span>
+                                                <% } else { %>
+                                                    <span class="badge-pendiente">PENDIENTE</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (c.estatus === 'Pendiente' || c.estatus === 'Rechazado') { %>
+                                                    <form action="/representante/reportar-pago" method="POST" class="form-reporte">
+                                                        <input type="hidden" name="id_cobro" value="<%= c.id %>">
+                                                        <input type="hidden" name="id_estudiante" value="<%= est.id %>">
+                                                        <div class="form-group">
+                                                            <label>Monto a transferir: <strong><%= montoBs %> Bs.</strong></label>
+                                                            <input type="text" name="comprobante" placeholder="Ej: Banco Mercantil - Ref: 98765432 - Fecha: 05/09" required>
+                                                        </div>
+                                                        <button type="submit" class="btn-submit">Reportar Pago Móvil</button>
+                                                    </form>
+                                                <% } else if (c.estatus === 'Revision') { %>
+                                                    <small style="color: #856404;">Comprobante enviado:<br><strong><%= c.comprobante %></strong></small>
+                                                <% } else { %>
+                                                    <small style="color: #155724;">Pago Conciliado con Éxito</small>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; color: #888; padding: 1.5rem;">No hay mensualidades ni cobros generados para este alumno.</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <% }); %>
+        <% } %>
+    </div>
+
+</body>
+</html>

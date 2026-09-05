@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - Academia Vivace</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { padding: 2rem; background: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+        .container-admin { max-width: 1150px; margin: 0 auto; }
+        .header-panel { background: white; padding: 2.5rem 2rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06); margin-bottom: 1.5rem; position: relative; }
+        .academy-logo-admin { max-width: 240px; height: auto; margin-bottom: 0.8rem; }
+        .badge-bcv { display: inline-block; background: #e8f4fd; color: #1e3c72; padding: 8px 18px; border-radius: 20px; font-weight: bold; margin-top: 0.8rem; font-size: 0.95rem; border: 1px solid #b2d7f5; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1.2rem; margin-top: 2rem; }
+        .menu-card { background: white; border: 2px solid #e9ecef; border-radius: 12px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .menu-card:hover { border-color: #1e3c72; transform: translateY(-4px); box-shadow: 0 8px 20px rgba(30,60,114,0.15); }
+        .menu-card-icon { font-size: 2.4rem; margin-bottom: 0.4rem; }
+        .menu-card-title { color: #1e3c72; margin: 0.3rem 0 0.2rem 0; font-size: 1.1rem; }
+        .menu-card-desc { color: #666; font-size: 0.85rem; margin: 0; }
+        .seccion-admin { display: none; background: white; padding: 2rem; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 1.5rem; }
+        .btn-volver { background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-volver:hover { background: #5a6268; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .form-group label { font-weight: bold; font-size: 0.88rem; color: #444; }
+        .form-group input, .form-group select, .form-group textarea { padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; width: 100%; }
+        .btn-submit-green { background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-top: 1rem; width: 100%; }
+        .btn-submit-green:hover { background: #219150; }
+        .btn-submit-orange { background: #e67e22; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-top: 1rem; }
+        .table-custom { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .table-custom th { background: #1e3c72; color: white; text-align: left; padding: 11px; font-size: 0.85rem; }
+        .table-custom td { padding: 11px; border-bottom: 1px solid #eee; font-size: 0.85rem; }
+        .badge-aldia { background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
+        .badge-moroso { background: #f8d7da; color: #721c24; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
+        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-card { background: white; width: 90%; max-width: 680px; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 88vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 1rem; right: 1.2rem; font-size: 1.5rem; font-weight: bold; cursor: pointer; color: #888; }
+        fieldset { border: 1px solid #ddd; padding: 1.2rem; border-radius: 8px; margin-bottom: 1rem; }
+        legend { font-weight: bold; color: #1e3c72; padding: 0 8px; }
+        .txt-pendiente-deuda { font-weight: bold; color: #c0392b; font-size: 1.05rem; }
+        .txt-pendiente-ok { font-weight: bold; color: #27ae60; font-size: 1.05rem; }
+        .info-monto-sugerido { background: #e8f4fd; border: 1px solid #b2d7f5; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: #1e3c72; font-weight: bold; margin-top: 0.4rem; }
+        .btn-logout { position: absolute; top: 1rem; right: 1rem; background: #c0392b; color: white; padding: 6px 12px; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: bold; }
+        
+        .btn-estado-pagado { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer; display: inline-block; width: 100%; text-align: center; }
+        .btn-estado-pendiente { background: #fff3cd; color: #856404; border: 1px solid #ffe8a1; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.78rem; cursor: pointer; display: inline-block; width: 100%; text-align: center; }
+
+        .box-liquidez-ok { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .box-liquidez-alerta { background: #fff3cd; border: 1px solid #ffe8a1; color: #856404; padding: 1.2rem; border-radius: 8px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container-admin">
+        
+        <!-- DASHBOARD INICIAL -->
+        <div id="pantalla-inicio-admin" class="header-panel">
+            <a href="/admin/logout" class="btn-logout">🔒 Cerrar Sesión</a>
+            <img src="/img/logo_vivace.png" alt="Logo Academia Vivace" class="academy-logo-admin">
+            <h1 style="color: #1e3c72; margin: 0; font-size: 2.2rem;">Academia de Música Vivace</h1>
+            <p style="color: #666; font-size: 1.05rem; margin-top: 0.3rem;">Sistema de Gestión Administrativa, Control Escolar y Contabilidad SENIAT</p>
+            <span class="badge-bcv">Tasa Oficial BCV: <%= Number(tasaBCV || 813.74).toFixed(2) %> Bs/$</span>
+
+            <div class="menu-grid">
+                <div class="menu-card" onclick="mostrarSeccion('registro')">
+                    <div class="menu-card-icon">📝</div>
+                    <h3 class="menu-card-title">Registrar Estudiante</h3>
+                    <p class="menu-card-desc">Ficha de nueva inscripción</p>
+                </div>
+                <div class="menu-card" onclick="mostrarSeccion('nomina-alumnos')">
+                    <div class="menu-card-icon">🎓</div>
+                    <h3 class="menu-card-title">Nómina Estudiantes</h3>
+                    <p class="menu-card-desc"><%= (estudiantes || []).length %> alumnos matriculados</p>
+                </div>
+                <div class="menu-card" onclick="mostrarSeccion('finanzas')">
+                    <div class="menu-card-icon">📊</div>
+                    <h3 class="menu-card-title">Finanzas y SENIAT</h3>
+                    <p class="menu-card-desc">Libro de Compras e Ingresos Exentos</p>
+                </div>
+                <div class="menu-card" onclick="mostrarSeccion('conciliacion')">
+                    <div class="menu-card-icon">🏦</div>
+                    <h3 class="menu-card-title">Conciliación Bancaria</h3>
+                    <p class="menu-card-desc"><%= (cobrosPorRevisar || []).length %> pagos pendientes</p>
+                </div>
+                <div class="menu-card" onclick="mostrarSeccion('personal')">
+                    <div class="menu-card-icon">🎼</div>
+                    <h3 class="menu-card-title">Nómina de Personal</h3>
+                    <p class="menu-card-desc"><%= (personal || []).length %> docentes registrados</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MÓDULO 1: REGISTRO DE ESTUDIANTES -->
+        <div id="seccion-registro" class="seccion-admin">
+            <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
+            <h2 style="color: #1e3c72; margin-bottom: 1rem;">Ficha Completa de Inscripción</h2>
+            <form action="/admin/agregar-estudiante" method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+                <fieldset>
+                    <legend>Datos del Estudiante</legend>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nombres y Apellidos *</label><input type="text" name="nombre_estudiante" required placeholder="Ej: Jesús Sevilla"></div>
+                        <div class="form-group"><label>Cédula de Identidad / Escolar</label><input type="text" name="cedula_estudiante" placeholder="Ej: V-30483601"></div>
+                        <div class="form-group"><label>Fecha de Nacimiento</label><input type="date" name="fecha_nacimiento"></div>
+                        <div class="form-group"><label>Edad</label><input type="number" name="edad" placeholder="Ej: 12"></div>
+                        <div class="form-group"><label>Tipo de Sangre</label><input type="text" name="tipo_sangre" placeholder="Ej: ORH+"></div>
+                        <div class="form-group"><label>URL Foto Alumno</label><input type="text" name="foto" placeholder="/img/logo_vivace.png"></div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Datos del Representante</legend>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nombre del Representante *</label><input type="text" name="nombre_representante" required></div>
+                        <div class="form-group"><label>Cédula</label><input type="text" name="cedula_representante"></div>
+                        <div class="form-group"><label>Teléfono (WhatsApp)</label><input type="text" name="telefono_representante"></div>
+                        <div class="form-group"><label>Parentesco</label><input type="text" name="parentesco"></div>
+                    </div>
+                    <div class="form-group" style="margin-top: 0.8rem;"><label>Correo Electrónico (Acceso al Portal) *</label><input type="email" name="email_representante" required></div>
+                </fieldset>
+                <fieldset>
+                    <legend>Académica</legend>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Cátedra / Instrumento *</label><input type="text" name="instrumento" required></div>
+                        <div class="form-group"><label>Nivel *</label><select name="nivel" required><option value="INFANTIL">INFANTIL</option><option value="JUVENIL">JUVENIL</option></select></div>
+                    </div>
+                </fieldset>
+                <button type="submit" class="btn-submit-green">Guardar e Inscribir Alumno</button>
+            </form>
+        </div>
+
+        <!-- MÓDULO 2: NÓMINA DE ESTUDIANTES -->
+        <div id="seccion-nomina-alumnos" class="seccion-admin">
+            <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
+            <h2 style="color: #1e3c72; margin-bottom: 0.5rem;">Nómina General de Estudiantes</h2>
+            <div style="overflow-x: auto;">
+                <table class="table-custom">
+                    <thead>
+                        <tr><th>Estudiante</th><th>Cátedra</th><th>Representante</th><th>Contacto</th><th>Estatus</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody>
+                        <% if (estudiantes && estudiantes.length > 0) { %>
+                            <% estudiantes.forEach((est) => { %>
+                                <tr>
+                                    <td><strong><%= est.nombre_estudiante %></strong><br><small><%= est.cedula_estudiante %></small></td>
+                                    <td><%= est.instrumento %><br><span style="background: #e8f4fd; color: #1e3c72; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;"><%= est.nivel %></span></td>
+                                    <td><%= est.nombre_representante %></td>
+                                    <td><%= est.telefono_representante %><br><small><%= est.email_representante %></small></td>
+                                    <td>
+                                        <% if (est.estaAlDia) { %>
+                                            <span class="badge-aldia">AL DÍA</span>
+                                        <% } else { %>
+                                            <span class="badge-moroso">MOROSO ($<%= Number(est.deudaUSD || 0).toFixed(2) %>)</span>
+                                        <% } %>
+                                    </td>
+                                    <td style="display: flex; gap: 0.4rem;">
+                                        <button onclick="verExpedienteModal('<%= est.id %>')" style="background: #1e3c72; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">📋 Expediente</button>
+                                        <a href="/carnet/<%= est.codigo_qr %>" target="_blank" style="background: #27ae60; color: white; text-decoration: none; padding: 6px 10px; border-radius: 4px; font-weight: bold;">🪪 Carnet</a>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr><td colspan="6" style="text-align: center; color: #888; padding: 2rem;">No hay estudiantes registrados.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MÓDULO 3: FINANZAS Y SENIAT -->
+        <div id="seccion-finanzas" class="seccion-admin">
+            <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <h2 style="color: #1e3c72; margin: 0;">Control Financiero y Declaración SENIAT (<%= nombreMesActual %>)</h2>
+                    <p style="color: #666; margin: 0.2rem 0 0 0;">Servicios Educativos Exentos de IVA y Libro de Compras.</p>
+                </div>
+                <a href="/admin/exportar-libro-compras" style="background: #1d6f42; color: white; padding: 10px 18px; text-decoration: none; border-radius: 6px; font-weight: bold;">📊 Exportar Libro SENIAT (.csv)</a>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.2rem; margin-bottom: 2rem;">
+                <div style="background: #e8f8f5; border-left: 5px solid #27ae60; padding: 1.2rem; border-radius: 8px;">
+                    <h4 style="color: #27ae60; margin:0;">Ingresos Recibidos</h4>
+                    <p style="font-size: 1.4rem; font-weight: bold; margin: 5px 0;"><%= Number(totalIngresosVES || 0).toFixed(2) %> Bs.</p>
+                </div>
+                <div style="background: #fdf2e9; border-left: 5px solid #e67e22; padding: 1.2rem; border-radius: 8px;">
+                    <h4 style="color: #d35400; margin:0;">Egresos Totales</h4>
+                    <p style="font-size: 1.4rem; font-weight: bold; margin: 5px 0;"><%= Number(totalEgresosVES || 0).toFixed(2) %> Bs.</p>
+                </div>
+                <div style="background: #ebf5fb; border-left: 5px solid #2980b9; padding: 1.2rem; border-radius: 8px;">
+                    <h4 style="color: #2980b9; margin:0;">IVA Débito (Educación)</h4>
+                    <p style="font-size: 1.4rem; font-weight: bold; margin: 5px 0;">0.00 Bs. (EXENTO)</p>
+                </div>
+                <div style="background: #fef9e7; border-left: 5px solid #f1c40f; padding: 1.2rem; border-radius: 8px;">
+                    <h4 style="color: #d4ac0d; margin:0;">IVA Crédito (Compras)</h4>
+                    <p style="font-size: 1.4rem; font-weight: bold; margin: 5px 0;"><%= Number(totalIvaCreditoVES || 0).toFixed(2) %> Bs.</p>
+                </div>
+            </div>
+
+            <h3 style="color: #1e3c72;">+ Registrar Egreso / Compra para Libro SENIAT</h3>
+            <form action="/admin/agregar-egreso" method="POST" style="background: #f8f9fa; padding: 1.2rem; border-radius: 8px; border: 1px solid #ddd; margin-top: 0.8rem;">
+                <div class="form-grid">
+                    <div class="form-group"><label>Proveedor *</label><input type="text" name="proveedor" required></div>
+                    <div class="form-group"><label>RIF *</label><input type="text" name="rif" required></div>
+                    <div class="form-group"><label>N° Factura</label><input type="text" name="numero_factura"></div>
+                    <div class="form-group"><label>N° Control</label><input type="text" name="numero_control"></div>
+                    <div class="form-group"><label>Concepto *</label><input type="text" name="concepto" required></div>
+                    <div class="form-group"><label>Monto Total (Bs.) *</label><input type="number" step="0.01" name="monto_ves" required></div>
+                    <div class="form-group"><label>Monto Exento (Bs.)</label><input type="number" step="0.01" name="monto_exento_ves"></div>
+                    <div class="form-group"><label>Base Imponible 16% (Bs.)</label><input type="number" step="0.01" name="base_imponible_ves"></div>
+                    <div class="form-group"><label>Equiv. ($)</label><input type="number" step="0.01" name="monto_usd"></div>
+                    <div class="form-group"><label>Soporte *</label><select name="tiene_factura"><option value="1">FACTURA CON IVA (16%)</option><option value="0">SIN FACTURA / EXENTO</option></select></div>
+                </div>
+                <button type="submit" class="btn-submit-orange" style="width:100%; margin-top:1rem;">Registrar Compra</button>
+            </form>
+
+            <h3 style="color: #1e3c72; margin-top: 2rem;">Libro de Compras Registradas (SENIAT)</h3>
+            <div style="overflow-x: auto; margin-top: 0.8rem;">
+                <table class="table-custom">
+                    <thead>
+                        <tr><th>Op.</th><th>Fecha</th><th>RIF</th><th>Proveedor</th><th>Factura</th><th>Control</th><th>Total (Bs)</th><th>Exentas</th><th>Base (16%)</th><th>IVA (Bs)</th></tr>
+                    </thead>
+                    <tbody>
+                        <% if (egresos && egresos.length > 0) { %>
+                            <% egresos.forEach((e, index) => { 
+                                const tf = e.tiene_factura === 1;
+                                const tot = Number(e.monto_ves || 0);
+                                const bas = tf ? Number(e.base_imponible_ves || 0) : 0;
+                                const iva = tf ? Number(e.monto_iva_ves || 0) : 0;
+                                const exe = tf ? (tot - (bas + iva)) : tot;
+                            %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= String(e.fecha_egreso || '').substring(0,10) %></td>
+                                    <td><strong><%= e.rif %></strong></td>
+                                    <td><%= e.proveedor %></td>
+                                    <td><%= e.numero_factura || 'N/A' %></td>
+                                    <td><%= e.numero_control || 'N/A' %></td>
+                                    <td><strong><%= tot.toFixed(2) %> Bs.</strong></td>
+                                    <td style="color:#c0392b;"><%= exe.toFixed(2) %> Bs.</td>
+                                    <td><%= bas.toFixed(2) %> Bs.</td>
+                                    <td style="color:#27ae60; font-weight:bold;"><%= iva.toFixed(2) %> Bs.</td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr><td colspan="10" style="text-align: center; color: #888; padding: 1.5rem;">No hay compras registradas.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MÓDULO 4: CONCILIACIÓN BANCARIA -->
+        <div id="seccion-conciliacion" class="seccion-admin">
+            <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
+            <h2 style="color: #1e3c72; margin-bottom: 0.5rem;">Conciliación de Pagos Móviles</h2>
+            <div style="overflow-x: auto;">
+                <% if (cobrosPorRevisar && cobrosPorRevisar.length > 0) { %>
+                    <table class="table-custom">
+                        <thead><tr><th>Estudiante</th><th>Concepto</th><th>Monto</th><th>Comprobante</th><th>Acción</th></tr></thead>
+                        <tbody>
+                            <% cobrosPorRevisar.forEach(c => { %>
+                                <tr>
+                                    <td><strong><%= c.nombre_estudiante %></strong><br><small><%= c.nombre_representante %></small></td>
+                                    <td><%= c.concepto %></td>
+                                    <td>$<%= c.monto_usd %></td>
+                                    <td><span style="background: #fff3cd; padding: 4px; font-weight: bold;"><%= c.comprobante %></span></td>
+                                    <td>
+                                        <form action="/admin/conciliar-pago" method="POST">
+                                            <input type="hidden" name="id_cobro" value="<%= c.id %>">
+                                            <input type="hidden" name="accion" value="aprobar">
+                                            <button type="submit" style="background: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;">Validar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                <% } else { %>
+                    <p style="text-align: center; color: #777; padding: 2rem;">No hay pagos pendientes por revisar.</p>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- MÓDULO 5: NÓMINA DE PERSONAL -->
+        <div id="seccion-personal" class="seccion-admin">
+            <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
+            <h2 style="color: #1e3c72; margin-bottom: 0.5rem;">Nómina de Profesores y Personal (<%= nombreMesActual %>)</h2>
+            <p style="color: #666; margin-bottom: 1rem;">Haz click en cualquier concepto para registrar su pago completo.</p>
+
+            <div class="<%= cajaCubreNomina ? 'box-liquidez-ok' : 'box-liquidez-alerta' %>">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.1rem;"><%= cajaCubreNomina ? ' DISPONIBILIDAD EN CAJA CONFIRMADA' : ' ATENCIÓN: LIQUIDEZ AJUSTADA' %></h3>
+                    <p style="margin: 4px 0 0 0; font-size: 0.9rem;">
+                        Pendiente Total por Liquidar: <strong><%= Number(totalNominaRequeridaVES || 0).toFixed(2) %> Bs. ($<%= Number(totalNominaRequeridaUSD || 0).toFixed(2) %>)</strong> | 
+                        Saldo Caja: <strong>$<%= Number(saldoCajaUSD || 0).toFixed(2) %></strong>
+                    </p>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <% if (personal && personal.length > 0) { %>
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Colaborador / Cargo</th>
+                                <th>Sueldo Básico</th>
+                                <th>Cesta Ticket</th>
+                                <th>Transporte</th>
+                                <th>Saldo Pendiente Mes</th>
+                                <th>Acción Docente</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% personal.forEach(p => { 
+                                const pendienteVES = Number(p.saldoPendienteVES || 0);
+                            %>
+                                <tr>
+                                    <td>
+                                        <strong><%= p.nombre_empleado %></strong><br>
+                                        <small style="color: #2a5298; font-weight: bold;"><%= p.cargo %></small><br>
+                                        <small style="color: #666;"><%= p.email %></small>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="<%= p.sueldoCompleto ? 'btn-estado-pagado' : 'btn-estado-pendiente' %>" onclick="abrirModalPagoDocente('<%= p.id %>', 'SUELDO_BASE')">
+                                            <%= p.sueldoCompleto ? 'PAGADO (VERDE)' : 'PENDIENTE' %>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="<%= p.alimentacionCompleta ? 'btn-estado-pagado' : 'btn-estado-pendiente' %>" onclick="abrirModalPagoDocente('<%= p.id %>', 'CESTA_TICKET')">
+                                            <%= p.alimentacionCompleta ? 'PAGADO (VERDE)' : 'PENDIENTE' %>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="<%= p.transporteCompleto ? 'btn-estado-pagado' : 'btn-estado-pendiente' %>" onclick="abrirModalPagoDocente('<%= p.id %>', 'TRANSPORTE')">
+                                            <%= p.transporteCompleto ? 'PAGADO (VERDE)' : 'PENDIENTE' %>
+                                        </button>
+                                    </td>
+                                    <td class="<%= pendienteVES > 0 ? 'txt-pendiente-deuda' : 'txt-pendiente-ok' %>">
+                                        <%= pendienteVES.toFixed(2) %> Bs.
+                                    </td>
+                                    <td style="display: flex; gap: 0.4rem;">
+                                        <button type="button" onclick="abrirModalPagoDocente('<%= p.id %>', 'SUELDO_BASE')" style="background: #27ae60; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">💳 Pagar</button>
+                                        <a href="/docente/portal/<%= p.id %>" target="_blank" style="background: #1e3c72; color: white; text-decoration: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; display: inline-block;">📄 Recibo</a>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                <% } else { %>
+                    <p style="text-align: center; color: #888; padding: 2rem;">No hay personal registrado.</p>
+                <% } %>
+            </div>
+
+            <hr style="margin: 2rem 0;">
+            <h3 style="color: #1e3c72;">+ Registrar Nuevo Colaborador</h3>
+            <form action="/admin/agregar-personal" method="POST" style="background: #f8f9fa; padding: 1.2rem; border-radius: 8px; border: 1px solid #ddd; margin-top: 1rem;">
+                <div class="form-grid">
+                    <div class="form-group"><label>Nombre Completo *</label><input type="text" name="nombre_empleado" required></div>
+                    <div class="form-group"><label>Cédula</label><input type="text" name="cedula"></div>
+                    <div class="form-group"><label>Cargo / Cátedra *</label><input type="text" name="cargo" required></div>
+                    <div class="form-group"><label>Teléfono</label><input type="text" name="telefono"></div>
+                    <div class="form-group"><label>Correo (Acceso al Portal Docente) *</label><input type="email" name="email" required></div>
+                    <div class="form-group"><label>Horas Mes</label><input type="number" name="horas_mes" required></div>
+                    <div class="form-group"><label>Sueldo Básico (Bs.) *</label><input type="number" step="0.01" name="sueldo_base_ves" required></div>
+                    <div class="form-group"><label>Cesta Ticket ($ BCV) *</label><input type="number" step="0.01" name="bono_alimentacion_usd" required></div>
+                    <div class="form-group"><label>Transporte ($ BCV) *</label><input type="number" step="0.01" name="bono_transporte_usd" required></div>
+                    <div class="form-group"><label>Datos Pago Móvil</label><input type="text" name="pago_movil_datos"></div>
+                </div>
+                <button type="submit" class="btn-submit-green" style="margin-top: 1rem;">Guardar Docente</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- MODAL EXPEDIENTE ESTUDIANTE -->
+    <div id="modalExpediente" class="modal-bg">
+        <div class="modal-card">
+            <span class="close-modal" onclick="cerrarModalExpediente()">&times;</span>
+            <h2 id="modalNombreEstudiante" style="color: #1e3c72;"></h2>
+            <p style="color: #666; margin-bottom: 1rem;">Representante: <strong id="modalNombreRepresentante"></strong></p>
+            <table class="table-custom">
+                <thead><tr><th>Concepto</th><th>Monto</th><th>Estatus</th></tr></thead>
+                <tbody id="modalTablaCobros"></tbody>
+            </table>
+            <hr style="margin: 1rem 0;">
+            <form action="/admin/agregar-cobro-estudiante" method="POST" style="display: flex; gap: 0.5rem;">
+                <input type="hidden" name="id_estudiante" id="inputModalIdEstudiante">
+                <input type="text" name="concepto" placeholder="Concepto cobro" required style="flex: 2; padding: 8px;">
+                <input type="number" step="0.01" name="monto_usd" placeholder="Monto $" required style="flex: 1; padding: 8px;">
+                <button type="submit" class="btn-submit-green" style="margin-top:0; width: auto;">Asignar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PAGO DOCENTE CON HISTORIAL DETALLADO -->
+    <div id="modalPagoDocente" class="modal-bg">
+        <div class="modal-card">
+            <span class="close-modal" onclick="cerrarModalPagoDocente()">&times;</span>
+            <h2 id="pagoDocenteNombre" style="color: #1e3c72;"></h2>
+            <p style="color: #666; margin-bottom: 1rem;">Cargo: <strong id="pagoDocenteCargo"></strong></p>
+
+            <form action="/admin/registrar-pago-individual-docente" method="POST" style="background: #f8f9fa; padding: 1.2rem; border-radius: 8px; border: 1px solid #ddd;">
+                <input type="hidden" name="id_personal" id="pagoDocenteId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Concepto a Pagar *</label>
+                        <select name="tipo_pago" id="selectTipoPago" onchange="actualizarMontoSugerido()" required>
+                            <option value="SUELDO_BASE">Sueldo Básico (Bs.)</option>
+                            <option value="CESTA_TICKET">Cesta Ticket / Alimentación (Bs.)</option>
+                            <option value="TRANSPORTE">Bono de Transporte (Bs.)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto Exacto en Bolívares (Bs.) *</label>
+                        <input type="number" step="0.01" name="monto_ves" id="inputMontoVes" required>
+                        <div id="boxInfoMonto" class="info-monto-sugerido"></div>
+                    </div>
+                    <div class="form-group"><label>N° Referencia *</label><input type="text" name="referencia" required></div>
+                    <div class="form-group"><label>Fecha *</label><input type="date" name="fecha_pago" id="inputFechaPago" required></div>
+                </div>
+                <div class="form-group" style="margin-top: 0.8rem;"><label>Observación</label><input type="text" name="observacion" placeholder="Ej: Pago completo del mes"></div>
+                <button type="submit" class="btn-submit-green" style="width:100%; margin-top:1rem;">Registrar Pago</button>
+            </form>
+
+            <h3 style="color: #1e3c72; margin-top: 1.5rem; font-size: 1rem;">Historial de Pagos de este Mes</h3>
+            <div style="overflow-x: auto; margin-top: 0.5rem;">
+                <table class="table-custom">
+                    <thead><tr><th>Concepto</th><th>Monto (Bs)</th><th>Ref</th><th>Fecha</th></tr></thead>
+                    <tbody id="tablaPagosDocenteBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script id="datos-estudiantes" type="application/json"><%- JSON.stringify(estudiantes || []) %></script>
+    <script id="datos-personal" type="application/json"><%- JSON.stringify(personal || []) %></script>
+
+    <script>
+        const tasaBCV = Number('<%= tasaBCV || 813.74 %>');
+        let listaEstudiantes = [], listaPersonal = [], docenteSeleccionado = null;
+
+        try {
+            listaEstudiantes = JSON.parse(document.getElementById('datos-estudiantes').textContent);
+            listaPersonal = JSON.parse(document.getElementById('datos-personal').textContent);
+        } catch(e) {}
+
+        document.getElementById('inputFechaPago').value = new Date().toISOString().substring(0,10);
+
+        function mostrarSeccion(id) {
+            document.getElementById('pantalla-inicio-admin').style.display = 'none';
+            document.querySelectorAll('.seccion-admin').forEach(s => s.style.display = 'none');
+            document.getElementById('seccion-' + id).style.display = 'block';
+        }
+
+        function volverInicio() {
+            document.querySelectorAll('.seccion-admin').forEach(s => s.style.display = 'none');
+            document.getElementById('pantalla-inicio-admin').style.display = 'block';
+        }
+
+        function verExpedienteModal(id) {
+            const est = listaEstudiantes.find(e => String(e.id) === String(id));
+            if (!est) return;
+            document.getElementById('inputModalIdEstudiante').value = est.id;
+            document.getElementById('modalNombreEstudiante').innerText = est.nombre_estudiante;
+            document.getElementById('modalNombreRepresentante').innerText = est.nombre_representante;
+            const tbody = document.getElementById('modalTablaCobros');
+            tbody.innerHTML = '';
+            if (est.cobrosHistorial && est.cobrosHistorial.length > 0) {
+                est.cobrosHistorial.forEach(c => {
+                    tbody.innerHTML += `<tr><td><strong>${c.concepto}</strong></td><td>$${c.monto_usd}</td><td><span style="color:${c.estatus === 'Pagado' ? '#27ae60' : '#c0392b'}; font-weight:bold;">${c.estatus}</span></td></tr>`;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Sin cobros.</td></tr>';
+            }
+            document.getElementById('modalExpediente').style.display = 'flex';
+        }
+
+        function cerrarModalExpediente() { document.getElementById('modalExpediente').style.display = 'none'; }
+
+        function abrirModalPagoDocente(idPersonal, conceptoSugerido) {
+            docenteSeleccionado = listaPersonal.find(item => String(item.id) === String(idPersonal));
+            if (!docenteSeleccionado) return;
+            document.getElementById('pagoDocenteId').value = docenteSeleccionado.id;
+            document.getElementById('pagoDocenteNombre').innerText = docenteSeleccionado.nombre_empleado;
+            document.getElementById('pagoDocenteCargo').innerText = docenteSeleccionado.cargo;
+            if (conceptoSugerido) document.getElementById('selectTipoPago').value = conceptoSugerido;
+            
+            actualizarMontoSugerido();
+
+            // Cargar historial de pagos en el modal
+            const tbody = document.getElementById('tablaPagosDocenteBody');
+            tbody.innerHTML = '';
+            if (docenteSeleccionado.historialPagos && docenteSeleccionado.historialPagos.length > 0) {
+                docenteSeleccionado.historialPagos.forEach(h => {
+                    tbody.innerHTML += `<tr><td><strong>${h.tipo_pago}</strong></td><td style="color:#27ae60; font-weight:bold;">${Number(h.monto_ves).toFixed(2)} Bs.</td><td><small>${h.referencia}</small></td><td><small>${String(h.fecha_pago).substring(0,10)}</small></td></tr>`;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No hay pagos registrados este mes.</td></tr>';
+            }
+
+            document.getElementById('modalPagoDocente').style.display = 'flex';
+        }
+
+        function actualizarMontoSugerido() {
+            if (!docenteSeleccionado) return;
+            const tipo = document.getElementById('selectTipoPago').value;
+            const inputMonto = document.getElementById('inputMontoVes');
+            const boxInfo = document.getElementById('boxInfoMonto');
+            let monto = 0;
+
+            if (tipo === 'SUELDO_BASE') {
+                monto = parseFloat(docenteSeleccionado.sueldo_base_ves) || 0;
+                boxInfo.innerText = "Sueldo Básico total: " + monto.toFixed(2) + " Bs.";
+            } else if (tipo === 'CESTA_TICKET') {
+                monto = (parseFloat(docenteSeleccionado.bono_alimentacion_usd) || 0) * tasaBCV;
+                boxInfo.innerText = "Cesta Ticket (" + docenteSeleccionado.bono_alimentacion_usd + "$ * " + tasaBCV + "): " + monto.toFixed(2) + " Bs.";
+            } else if (tipo === 'TRANSPORTE') {
+                monto = (parseFloat(docenteSeleccionado.bono_transporte_usd) || 0) * tasaBCV;
+                boxInfo.innerText = "Transporte (" + docenteSeleccionado.bono_transporte_usd + "$ * " + tasaBCV + "): " + monto.toFixed(2) + " Bs.";
+            }
+            inputMonto.value = monto > 0 ? monto.toFixed(2) : '';
+        }
+
+        function cerrarModalPagoDocente() { document.getElementById('modalPagoDocente').style.display = 'none'; }
+    </script>
+</body>
+</html>

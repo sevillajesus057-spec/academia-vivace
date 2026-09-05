@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Familiar - Academia Vivace</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body style="background: #f4f6f9; padding: 1.5rem; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+    <div style="max-width: 1050px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <img src="/img/logo_vivace.png" alt="Logo Academia Vivace" style="height: 60px;">
+                <div>
+                    <h1 style="color: #1e3c72; margin: 0; font-size: 1.6rem;">Academia Vivace</h1>
+                    <p style="color: #666; margin: 0; font-size: 0.9rem;">Portal de Familias y Estudiantes</p>
+                </div>
+            </div>
+            <a href="/" style="text-decoration: none; background: #e74c3c; color: white; padding: 8px 15px; border-radius: 6px; font-weight: bold; font-size: 0.85rem;">Cerrar Sesión</a>
+        </div>
+
+        <% if (typeof mensajeExito !== 'undefined' && mensajeExito) { %>
+            <div style="background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-top: 1rem; border: 1px solid #c3e6cb; font-weight: bold; text-align: center;">
+                 <%= mensajeExito %>
+            </div>
+        <% } %>
+
+        <div style="margin-top: 1.5rem;">
+            <h2 style="color: #1e3c72; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem;">Mis Representados (<%= estudiantes.length %>)</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                <% estudiantes.forEach(est => { %>
+                    <div style="background: #f8f9fa; padding: 1.2rem; border-radius: 10px; border-left: 5px solid #1e3c72; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3 style="color: #2a5298; margin: 0 0 0.4rem 0;"><%= est.nombre_estudiante %></h3>
+                            <p style="margin: 0; font-size: 0.9rem;"><strong>Cátedra:</strong> <%= est.instrumento %></p>
+                            <p style="margin: 0; font-size: 0.9rem;"><strong>Nivel:</strong> <%= est.nivel %></p>
+                        </div>
+                        <div style="text-align: center; background: white; padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                            <div class="qr-container" data-url="http://<%= host %>/carnet/<%= est.codigo_qr %>"></div>
+                            <a href="/carnet/<%= est.codigo_qr %>" target="_blank" style="display: block; margin-top: 4px; color: #1e3c72; font-weight: bold; font-size: 0.75rem; text-decoration: none;">Ver Carnet Digital</a>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <div style="margin-top: 2.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem;">
+                <h2 style="color: #1e3c72; margin: 0;"> Estado de Cuenta y Pagos</h2>
+                <span style="background: #e8f4fd; color: #1e3c72; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">Tasa BCV: <%= tasaBCV %> Bs/$</span>
+            </div>
+
+            <div style="margin-top: 1rem; background: #f0f7ff; padding: 1rem; border-radius: 8px; border: 1px solid #b8daff;">
+                <h3 style="color: #004085; font-size: 0.95rem; margin: 0 0 0.5rem 0;"> Datos para Pago Móvil</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; font-size: 0.88rem;">
+                    <div><strong>Banco:</strong> BANCO NACIONAL DE CRÉDITO (BNC)</div>
+                    <div><strong>RIF:</strong> J-508106830</div>
+                    <div><strong>Teléfono:</strong> 04221445395</div>
+                </div>
+            </div>
+
+            <form id="formPagoMultiple">
+                <div style="margin-top: 1rem; overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #1e3c72; color: white; text-align: left;">
+                                <th style="padding: 10px; text-align: center;">Pagar</th>
+                                <th style="padding: 10px;">Estudiante</th>
+                                <th style="padding: 10px;">Concepto</th>
+                                <th style="padding: 10px;">Monto ($)</th>
+                                <th style="padding: 10px;">Monto (Bs.)</th>
+                                <th style="padding: 10px;">Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% cobros.forEach(cobro => { %>
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 10px; text-align: center;">
+                                        <% if (cobro.estatus === 'Pendiente') { %>
+                                            <input type="checkbox" class="check-cobro" data-id="<%= cobro.id %>" data-usd="<%= cobro.monto_usd %>" data-bs="<%= (cobro.monto_usd * tasaBCV).toFixed(2) %>">
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </td>
+                                    <td style="padding: 10px;"><strong><%= cobro.nombre_estudiante %></strong></td>
+                                    <td style="padding: 10px; font-weight: bold;"><%= cobro.concepto %></td>
+                                    <td style="padding: 10px;">$<%= cobro.monto_usd.toFixed(2) %></td>
+                                    <td style="padding: 10px; font-weight: bold; color: #27ae60;"><%= (cobro.monto_usd * tasaBCV).toFixed(2) %> Bs.</td>
+                                    <td style="padding: 10px;">
+                                        <% if (cobro.estatus === 'Pagado') { %>
+                                            <span style="background: #27ae60; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">Pagado</span>
+                                        <% } else if (cobro.estatus === 'Revision') { %>
+                                            <span style="background: #f39c12; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">En Validación</span>
+                                        <% } else { %>
+                                            <span style="background: #e74c3c; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">Pendiente</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 1.5rem; background: #f8f9fa; padding: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border: 1px solid #ddd;">
+                    <div>
+                        <span style="font-size: 1.1rem; font-weight: bold;">Total Seleccionado: </span>
+                        <span id="totalUsdText" style="font-size: 1.2rem; font-weight: bold; color: #1e3c72;">$0.00</span>
+                        <span id="totalBsText" style="font-size: 1.2rem; font-weight: bold; color: #27ae60; margin-left: 10px;">(0.00 Bs.)</span>
+                    </div>
+                    <button type="button" id="btnPagarSeleccionados" disabled style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; opacity: 0.5;">Reportar Pago Seleccionado</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- MODAL REPORTE PAGO -->
+    <div id="modalPago" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
+        <div style="background: white; padding: 2rem; border-radius: 10px; max-width: 450px; width: 90%;">
+            <h2 style="color: #1e3c72; margin-bottom: 0.5rem;">Reportar Pago Móvil</h2>
+            <p id="modalDetalleMonto" style="font-weight: bold; color: #27ae60; margin-bottom: 1rem; font-size: 1.1rem;"></p>
+
+            <form action="/estudiante/reportar-pago" method="POST">
+                <input type="hidden" name="email_representante" value="<%= estudiantes[0].email_representante %>">
+                <div id="contenedorInputsOcultos"></div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 0.3rem;">Banco de Origen:</label>
+                    <input type="text" name="banco_origen" placeholder="Ej: Banesco, Venezuela, Mercantil" required style="width: 100%; padding: 8px;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 0.3rem;">Número de Referencia:</label>
+                    <input type="text" name="referencia" placeholder="Ej: 004582" required style="width: 100%; padding: 8px;">
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 0.3rem;">Fecha del Pago:</label>
+                    <input type="date" name="fecha_pago" required style="width: 100%; padding: 8px;">
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" style="background: #27ae60; color: white; border: none; padding: 10px; border-radius: 6px; flex: 1; cursor: pointer; font-weight: bold;">Enviar Reporte</button>
+                    <button type="button" id="btnCerrarModal" style="background: #95a5a6; color: white; border: none; padding: 10px; border-radius: 6px; flex: 1; cursor: pointer;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const qrContainers = document.querySelectorAll('.qr-container');
+            qrContainers.forEach(function (container) {
+                const qrUrl = container.getAttribute('data-url');
+                if (qrUrl) {
+                    new QRCode(container, { text: qrUrl, width: 70, height: 70 });
+                }
+            });
+
+            let idsSeleccionados = [];
+            let acumuladoUsd = 0;
+            let acumuladoBs = 0;
+
+            const checkboxes = document.querySelectorAll('.check-cobro');
+            const btnPagar = document.getElementById('btnPagarSeleccionados');
+            const totalUsdText = document.getElementById('totalUsdText');
+            const totalBsText = document.getElementById('totalBsText');
+            const modalPago = document.getElementById('modalPago');
+            const btnCerrarModal = document.getElementById('btnCerrarModal');
+
+            checkboxes.forEach(function (cb) {
+                cb.addEventListener('change', function () {
+                    idsSeleccionados = [];
+                    acumuladoUsd = 0;
+                    acumuladoBs = 0;
+
+                    const checkedList = document.querySelectorAll('.check-cobro:checked');
+                    checkedList.forEach(function (item) {
+                        idsSeleccionados.push(item.getAttribute('data-id'));
+                        acumuladoUsd += parseFloat(item.getAttribute('data-usd') || 0);
+                        acumuladoBs += parseFloat(item.getAttribute('data-bs') || 0);
+                    });
+
+                    totalUsdText.innerText = "$" + acumuladoUsd.toFixed(2);
+                    totalBsText.innerText = "(" + acumuladoBs.toFixed(2) + " Bs.)";
+
+                    btnPagar.disabled = idsSeleccionados.length === 0;
+                    btnPagar.style.opacity = idsSeleccionados.length > 0 ? '1' : '0.5';
+                });
+            });
+
+            btnPagar.addEventListener('click', function () {
+                const contenedor = document.getElementById('contenedorInputsOcultos');
+                contenedor.innerHTML = '';
+
+                idsSeleccionados.forEach(function (id) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'cobros_seleccionados';
+                    input.value = id;
+                    contenedor.appendChild(input);
+                });
+
+                document.getElementById('modalDetalleMonto').innerText = "Total a Pagar: $" + acumuladoUsd.toFixed(2) + " (" + acumuladoBs.toFixed(2) + " Bs.)";
+                modalPago.style.display = 'flex';
+            });
+
+            btnCerrarModal.addEventListener('click', function () {
+                modalPago.style.display = 'none';
+            });
+        });
+    </script>
+
+</body>
+</html>
