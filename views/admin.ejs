@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        <!-- MÓDULO 1: REGISTRO DE ESTUDIANTES (CON EXONERACIÓN) -->
+        <!-- MÓDULO 1: REGISTRO DE ESTUDIANTES (CON SELECCIÓN MÚLTIPLE DE INSTRUMENTOS) -->
         <div id="seccion-registro" class="seccion-admin">
             <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
             <h2 style="color: var(--vivace-purple, #7b2cbf); margin-bottom: 1rem;">Ficha Completa de Inscripción</h2>
@@ -132,21 +132,39 @@
                     </div>
                     <div class="form-group" style="margin-top: 0.8rem;"><label>Correo Electrónico (Acceso al Portal) *</label><input type="email" name="email_representante" required></div>
                 </fieldset>
+                
                 <fieldset>
                     <legend>Académica</legend>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Cátedra / Instrumento *</label>
-                            <select name="instrumento" required>
-                                <option value="">Seleccione un instrumento...</option>
-                                <option value="PERCUSION">PERCUSION</option>
-                                <option value="CUATRO">CUATRO</option>
-                                <option value="GUITARRA">GUITARRA</option>
-                                <option value="TECLADO">TECLADO</option>
-                                <option value="BAJO ELECTRICO">BAJO ELECTRICO</option>
-                                <option value="OTRO">OTRO</option>
-                            </select>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label style="margin-bottom: 0.4rem; display: block;">Cátedras / Instrumentos (Puedes seleccionar varios) *</label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; background: #fff; padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="instrumentos_multiples" value="PERCUSION" style="width: 18px; height: 18px;"> PERCUSION
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="instrumentos_multiples" value="CUATRO" style="width: 18px; height: 18px;"> CUATRO
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="instrumentos_multiples" value="GUITARRA" style="width: 18px; height: 18px;"> GUITARRA
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="instrumentos_multiples" value="TECLADO" style="width: 18px; height: 18px;"> TECLADO
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="instrumentos_multiples" value="BAJO ELECTRICO" style="width: 18px; height: 18px;"> BAJO ELECTRICO
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="instrumentos_multiples" value="LENGUAJE MUSICAL" style="width: 18px; height: 18px;"> LENGUAJE MUSICAL
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="instrumentos_multiples" value="CORO" style="width: 18px; height: 18px;"> CORO
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="instrumentos_multiples" value="ENSAYO" style="width: 18px; height: 18px;"> ENSAYO
+                            </label>
                         </div>
+                    </div>
+                    <div class="form-grid">
                         <div class="form-group">
                             <label>Nivel *</label>
                             <select name="nivel" required>
@@ -496,7 +514,7 @@
             </div>
         </div>
 
-        <!-- MÓDULO 5: NÓMINA DE PERSONAL -->
+        <!-- MÓDULO 5: NÓMINA DE PERSONAL (CON SELECCIÓN MÚLTIPLE DE CARGOS/CÁTEDRAS) -->
         <div id="seccion-personal" class="seccion-admin">
             <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
             <h2 style="color: var(--vivace-purple, #7b2cbf); margin-bottom: 0.5rem;">Nómina de Profesores y Personal (<%= typeof nombreMesActual !== 'undefined' ? nombreMesActual : '' %>)</h2>
@@ -572,21 +590,40 @@
                 <div class="form-grid">
                     <div class="form-group"><label>Nombre Completo *</label><input type="text" name="nombre_empleado" required></div>
                     <div class="form-group"><label>Cédula</label><input type="text" name="cedula"></div>
-                    <div class="form-group">
-                        <label>Cátedra / Cargo del Colaborador *</label>
-                        <select name="cargo" required>
-                            <option value="">Seleccione cargo o cátedra...</option>
-                            <option value="Personal Administrativo / Secretaría">Personal Administrativo / Secretaría</option>
-                            <option value="Teclado">Teclado</option>
-                            <option value="Cuatro">Cuatro</option>
-                            <option value="Guitarra">Guitarra</option>
-                            <option value="Bajo Eléctrico">Bajo Eléctrico</option>
-                            <option value="Percusión">Percusión</option>
-                            <option value="Coro">Coro (Todos los alumnos)</option>
-                            <option value="Lenguaje Musical">Lenguaje Musical (Todos los alumnos)</option>
-                            <option value="Ensayo">Ensayo</option>
-                        </select>
+                    
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label style="margin-bottom: 0.3rem; display: block;">Cátedras / Cargos del Colaborador (Selecciona una o varias) *</label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.8rem; background: #fff; padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="cargos_multiples" value="Personal Administrativo / Secretaría" style="width: 18px; height: 18px;"> Personal Administrativo / Secretaría
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="cargos_multiples" value="Teclado" style="width: 18px; height: 18px;"> Teclado
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="cargos_multiples" value="Cuatro" style="width: 18px; height: 18px;"> Cuatro
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="cargos_multiples" value="Guitarra" style="width: 18px; height: 18px;"> Guitarra
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="cargos_multiples" value="Bajo Eléctrico" style="width: 18px; height: 18px;"> Bajo Eléctrico
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="cargos_multiples" value="Percusión" style="width: 18px; height: 18px;"> Percusión
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="cargos_multiples" value="Coro" style="width: 18px; height: 18px;"> Coro
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="cargos_multiples" value="Lenguaje Musical" style="width: 18px; height: 18px;"> Lenguaje Musical
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" name="cargos_multiples" value="Ensayo" style="width: 18px; height: 18px;"> Ensayo
+                            </label>
+                        </div>
                     </div>
+
                     <div class="form-group"><label>Teléfono</label><input type="text" name="telefono"></div>
                     <div class="form-group"><label>Correo (Acceso al Portal) *</label><input type="email" name="email" required></div>
                     <div class="form-group"><label>Horas Mes</label><input type="number" name="horas_mes" required></div>
@@ -787,7 +824,7 @@
 
                 const coincideNombre = nombre.includes(textoBusqueda);
                 const coincideGrupo = !grupoSeleccionado || grupo === grupoSeleccionado;
-                const coincideInstrumento = !instrumentoSeleccionado || instrumento === instrumentoSeleccionado;
+                const coincideInstrumento = !instrumentoSeleccionado || instrumento.includes(instrumentoSeleccionado);
 
                 if (coincideNombre && coincideGrupo && coincideInstrumento) {
                     fila.style.display = '';
@@ -902,7 +939,7 @@
 
             const tbody = document.getElementById('tablaPagosDocenteBody');
             tbody.innerHTML = '';
-            if (docenteSeleccionado.historialPagos && docenteSeleccionado.historialPagos.length > 0) {
+            if (docenteSeleccionado.historialPagos && docenteSeleccionado.historialPagos.length >0) {
                 docenteSeleccionado.historialPagos.forEach(h => {
                     tbody.innerHTML += `<tr><td><strong>${h.tipo_pago}</strong></td><td style="color:#27ae60; font-weight:bold;">${Number(h.monto_ves).toFixed(2)} Bs.</td><td><small>${h.referencia}</small></td><td><small>${String(h.fecha_pago).substring(0,10)}</small></td></tr>`;
                 });
