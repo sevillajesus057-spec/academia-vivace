@@ -1,0 +1,13 @@
+2026/09/06-14:42:34.183 36ec Reusing MANIFEST C:\Users\Jesus\Desktop\academia-vivace\.wwebjs_auth\session-vivace-session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/09/06-14:42:34.184 36ec Recovering log #219
+2026/09/06-14:42:34.184 36ec Reusing old log C:\Users\Jesus\Desktop\academia-vivace\.wwebjs_auth\session-vivace-session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000219.log 
+2026/09/06-14:42:39.395 2d50 Compacting 1@1 + 7@2 files
+2026/09/06-14:42:39.489 2d50 Generated table #222@1: 20942 keys, 2143670 bytes
+2026/09/06-14:42:39.625 2d50 Generated table #223@1: 96212 keys, 2246602 bytes
+2026/09/06-14:42:39.738 2d50 Generated table #224@1: 91263 keys, 2240756 bytes
+2026/09/06-14:42:39.843 2d50 Generated table #225@1: 48065 keys, 2212416 bytes
+2026/09/06-14:42:39.917 2d50 Generated table #226@1: 1916 keys, 2146277 bytes
+2026/09/06-14:42:40.048 2d50 Generated table #227@1: 16422 keys, 2203896 bytes
+2026/09/06-14:42:40.201 2d50 Generated table #228@1: 13811 keys, 727824 bytes
+2026/09/06-14:42:40.201 2d50 Compacted 1@1 + 7@2 files => 13921441 bytes
+2026/09/06-14:42:40.203 2d50 compacted to: files[ 0 0 7 0 0 0 0 ]

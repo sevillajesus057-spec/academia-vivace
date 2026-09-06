@@ -8,112 +8,292 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { padding: 2rem; background: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .card { background: white; padding: 2rem; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
-        .badge-bcv { background: #e8f4fd; color: #1e3c72; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border: 1px solid #b2d7f5; }
-        .table-custom { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-        .table-custom th { background: #1e3c72; color: white; text-align: left; padding: 10px; font-size: 0.85rem; }
-        .table-custom td { padding: 10px; border-bottom: 1px solid #eee; font-size: 0.85rem; }
-        .badge-pagado { background: #d4edda; color: #155724; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; }
-        .badge-pendiente { background: #f8d7da; color: #721c24; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; }
-        .badge-revision { background: #fff3cd; color: #856404; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; }
-        .btn-volver { background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; }
-        .btn-volver:hover { background: #5a6268; }
-        .form-reporte { background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 0.8rem; border: 1px solid #ddd; }
-        .form-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.8rem; }
-        .form-group label { font-weight: bold; font-size: 0.82rem; color: #444; }
-        .form-group input { padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; }
-        .btn-submit { background: #27ae60; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
-        .btn-submit:hover { background: #219150; }
+        .container { max-width: 950px; margin: 0 auto; }
+        .header-card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); text-align: center; margin-bottom: 1.5rem; border-top: 5px solid #1e3c72; }
+        .academy-logo { max-width: 180px; height: auto; margin-bottom: 0.8rem; }
+        
+        .portal-title { color: #1e3c72; font-size: 1.6rem; margin-bottom: 0.2rem; }
+        .portal-subtitle { color: #666; font-size: 0.95rem; }
+        .logout-container { margin-top: 0.8rem; }
+        .logout-link { color: #e0248c; text-decoration: none; font-weight: bold; font-size: 0.85rem; }
+
+        .hermanos-nav { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; flex-wrap: wrap; justify-content: center; }
+        .hermano-tab-btn { background: white; border: 2px solid #ddd; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .hermano-tab-btn.active { border-color: #1e3c72; background: #faf5ff; transform: translateY(-2px); }
+        .dot-status { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .dot-green { background: #27ae60; }
+        .dot-red { background: #c0392b; }
+        .hermano-nombre { color: #333; font-size: 0.95rem; }
+        .hermano-inst { color: #666; font-size: 0.75rem; }
+
+        .student-card { background: white; border-radius: 14px; padding: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: none; }
+        .student-card.active { display: block; }
+
+        .student-header-flex { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 2px solid #f1f3f5; padding-bottom: 1.2rem; margin-bottom: 1.2rem; }
+        .student-name { color: #1e3c72; font-size: 1.4rem; margin-bottom: 0.3rem; }
+        .student-info { color: #555; font-size: 0.9rem; }
+        .student-rep { color: #777; font-size: 0.82rem; margin-top: 2px; }
+
+        .table-custom { width: 100%; border-collapse: collapse; margin-top: 0.8rem; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .table-custom th { background: #1e3c72; color: white; text-align: left; padding: 10px 12px; font-size: 0.82rem; }
+        .table-custom td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 0.82rem; }
+        .table-responsive { overflow-x: auto; margin-bottom: 1.5rem; }
+
+        .badge-solvente { display: inline-block; background: #d4edda; color: #155724; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border: 1px solid #c3e6cb; }
+        .badge-moroso { display: inline-block; background: #f8d7da; color: #721c24; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border: 1px solid #f5c6cb; }
+        
+        .btn-action { background: #2980b9; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .btn-action:hover { opacity: 0.9; }
+
+        .section-title { color: #1e3c72; font-size: 1.1rem; margin-bottom: 0.6rem; margin-top: 1.2rem; }
+        .status-pagado { color: #27ae60; font-weight: bold; }
+        .status-revision { color: #f39c12; font-weight: bold; }
+        .status-pendiente { color: #c0392b; font-weight: bold; }
+        .form-reportar { display: flex; gap: 6px; align-items: center; }
+        .input-ref { padding: 5px 8px; font-size: 0.8rem; border: 1px solid #ccc; border-radius: 4px; width: 130px; }
+
+        .solsitos-banner { background: #fffdf4; border: 2px dashed #f39c12; padding: 1rem 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+        .solsitos-title { color: #d35400; font-size: 1rem; margin-bottom: 0.2rem; }
+        .solsitos-desc { font-size: 0.8rem; color: #666; }
+        .solsitos-badge { font-size: 1.1rem; font-weight: bold; color: #e67e22; background: #fef5d1; padding: 6px 16px; border-radius: 50px; }
+
+        .catedras-nav { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .cat-btn { padding: 7px 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.82rem; }
+        .cat-btn.activo { background: #1e3c72; color: white; }
+        .cat-btn.inactivo { background: #e9ecef; color: #555; }
+
+        .cat-content-box { background: #fafbfc; padding: 1.2rem; border-radius: 10px; border: 1px solid #e1e8ed; margin-bottom: 1rem; }
+        .asistencia-box { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 1rem; }
+        .asis-label { font-weight: bold; color: #333; font-size: 0.85rem; }
+        .asis-badge { background: #e0fbfc; color: #1e3c72; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.82rem; }
+        .eval-title { color: #1e3c72; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .nota-val { color: #27ae60; font-weight: bold; font-size: 0.9rem; }
+        
+        .bloqueo-box { background: #fdf2f2; border: 1px solid #f5c6cb; color: #721c24; padding: 1.2rem; border-radius: 8px; text-align: center; margin-top: 1rem; }
+        .bloqueo-text { font-size: 0.85rem; margin-top: 4px; }
+        .text-center { text-align: center; }
+        .text-muted { color: #888; }
+        .text-italic { color: #777; font-size: 0.82rem; font-style: italic; padding: 0.4rem 0; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <a href="/" class="btn-volver">⬅ Salir / Buscar Otro Estudiante</a>
-
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <div>
-                    <h1 style="color: #1e3c72; margin: 0;">Portal del Representante</h1>
-                    <p style="color: #666; margin: 0.3rem 0 0 0;">Estado de cuenta y reporte de pagos móviles</p>
-                </div>
-                <div>
-                    <span class="badge-bcv">Tasa BCV Oficial: <%= Number(tasaBCV).toFixed(2) %> Bs/$</span>
-                </div>
+        <div class="header-card">
+            <img src="/img/logo_vivace.png" alt="Logo Academia Vivace" class="academy-logo">
+            <h1 class="portal-title">Portal del Representante</h1>
+            <p class="portal-subtitle">Seleccione a su representado para consultar su avance académico y financiero.</p>
+            <div class="logout-container">
+                <a href="/" class="logout-link">← Cerrar Sesión / Buscar Otro Representante</a>
             </div>
         </div>
 
         <% if (estudiantes && estudiantes.length > 0) { %>
-            <% estudiantes.forEach(est => { %>
-                <div class="card">
-                    <h2 style="color: #1e3c72; margin-bottom: 0.2rem;"><%= est.nombre_estudiante %></h2>
-                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
-                        Representante: <strong><%= est.nombre_representante %></strong> | 
-                        Cátedra: <strong><%= est.instrumento %></strong> (<%= est.nivel %>)
-                    </p>
+            
+            <div class="hermanos-nav">
+                <% estudiantes.forEach((est, index) => { %>
+                    <button onclick="cambiarEstudianteTab('<%= est.id %>', event)" class="hermano-tab-btn <% if (index === 0) { %>active<% } %>" id="btn-tab-<%= est.id %>">
+                        <span class="dot-status <%= est.solvente ? 'dot-green' : 'dot-red' %>"></span>
+                        <span class="hermano-nombre"><%= est.nombre_estudiante %></span>
+                        <small class="hermano-inst">(<%= est.instrumento %>)</small>
+                    </button>
+                <% }); %>
+            </div>
 
-                    <h3 style="color: #1e3c72; font-size: 1rem; margin-top: 1rem;">Estado de Cuenta y Mensualidades</h3>
-                    <div style="overflow-x: auto;">
+            <% estudiantes.forEach((est, index) => { %>
+                <div class="student-card <% if (index === 0) { %>active<% } %>" id="student-content-<%= est.id %>">
+                    
+                    <div class="student-header-flex">
+                        <div>
+                            <h2 class="student-name"><%= est.nombre_estudiante %></h2>
+                            <p class="student-info">Instrumento: <strong><%= est.instrumento %></strong> | Nivel: <strong><%= est.nivel %></strong></p>
+                            <p class="student-rep">Representante: <%= est.nombre_representante %> (<%= est.email_representante %>)</p>
+                        </div>
+                        <div>
+                            <% if (est.solvente) { %>
+                                <span class="badge-solvente">✔ Solvente / Al Día</span>
+                            <% } else { %>
+                                <span class="badge-moroso">✖ Pago Pendiente / Revisión</span>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN DE DESCARGA DE BOLETÍN INFORMATIVO -->
+                    <div style="background: #fdf4ff; border: 2px dashed #7b2cbf; padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; text-align: center;">
+                        <h4 style="color: #7b2cbf; margin-bottom: 0.4rem; font-size: 1.05rem;">🎓 Boletín Informativo Académico</h4>
+                        
+                        <% if (typeof boletinAutorizado !== 'undefined' && boletinAutorizado) { %>
+                            <p style="color: #27ae60; font-size: 0.88rem; margin-bottom: 0.8rem; font-weight: bold;">
+                                🟢 ¡Los boletines oficiales ya se encuentran autorizados para descarga!
+                            </p>
+                            <a href="/representante/boletin/<%= est.id %>" target="_blank" style="background: #27ae60; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(39,174,96,0.2);">
+                                📥 Descargar Boletín en PDF
+                            </a>
+                        <% } else { %>
+                            <p style="color: #e67e22; font-size: 0.85rem; margin: 0;">
+                                🔒 Los boletines académicos aún no han sido autorizados por la dirección de la Academia. Estarán disponibles al finalizar el periodo de evaluaciones.
+                            </p>
+                        <% } %>
+                    </div>
+
+                    <h3 class="section-title">💳 Estado de Cuenta y Mensualidades</h3>
+                    <div class="table-responsive">
                         <table class="table-custom">
                             <thead>
                                 <tr>
                                     <th>Concepto</th>
                                     <th>Monto ($)</th>
-                                    <th>Equivalente (Bs.)</th>
+                                    <th>Período</th>
                                     <th>Estatus</th>
-                                    <th>Acción / Reportar Pago Móvil</th>
+                                    <th>Acción / Reporte</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <% if (est.cobrosHistorial && est.cobrosHistorial.length > 0) { %>
-                                    <% est.cobrosHistorial.forEach(c => { 
-                                        const montoBs = (Number(c.monto_usd) * tasaBCV).toFixed(2);
-                                    %>
+                                    <% est.cobrosHistorial.forEach(cobro => { %>
                                         <tr>
-                                            <td><strong><%= c.concepto %></strong></td>
-                                            <td>$<%= Number(c.monto_usd).toFixed(2) %></td>
-                                            <td style="color: #27ae60; font-weight: bold;"><%= montoBs %> Bs.</td>
+                                            <td><strong><%= cobro.concepto %></strong></td>
+                                            <td>$<%= Number(cobro.monto_usd || 0).toFixed(2) %></td>
+                                            <td><%= cobro.mes_anio %></td>
                                             <td>
-                                                <% if (c.estatus === 'Pagado') { %>
-                                                    <span class="badge-pagado">PAGADO</span>
-                                                <% } else if (c.estatus === 'Revision') { %>
-                                                    <span class="badge-revision">EN REVISIÓN</span>
+                                                <% if (cobro.estatus === 'Pagado') { %>
+                                                    <span class="status-pagado">Pagado</span>
+                                                <% } else if (cobro.estatus === 'Revision') { %>
+                                                    <span class="status-revision">En Revisión</span>
                                                 <% } else { %>
-                                                    <span class="badge-pendiente">PENDIENTE</span>
+                                                    <span class="status-pendiente">Pendiente</span>
                                                 <% } %>
                                             </td>
                                             <td>
-                                                <% if (c.estatus === 'Pendiente' || c.estatus === 'Rechazado') { %>
-                                                    <form action="/representante/reportar-pago" method="POST" class="form-reporte">
-                                                        <input type="hidden" name="id_cobro" value="<%= c.id %>">
+                                                <% if (cobro.estatus === 'Pendiente' || cobro.estatus === 'Rechazado') { %>
+                                                    <form action="/representante/reportar-pago" method="POST" class="form-reportar">
+                                                        <input type="hidden" name="id_cobro" value="<%= cobro.id %>">
                                                         <input type="hidden" name="id_estudiante" value="<%= est.id %>">
-                                                        <div class="form-group">
-                                                            <label>Monto a transferir: <strong><%= montoBs %> Bs.</strong></label>
-                                                            <input type="text" name="comprobante" placeholder="Ej: Banco Mercantil - Ref: 98765432 - Fecha: 05/09" required>
-                                                        </div>
-                                                        <button type="submit" class="btn-submit">Reportar Pago Móvil</button>
+                                                        <input type="text" name="comprobante" placeholder="N° Ref. Pago Móvil" required class="input-ref">
+                                                        <button type="submit" class="btn-action">Reportar</button>
                                                     </form>
-                                                <% } else if (c.estatus === 'Revision') { %>
-                                                    <small style="color: #856404;">Comprobante enviado:<br><strong><%= c.comprobante %></strong></small>
                                                 <% } else { %>
-                                                    <small style="color: #155724;">Pago Conciliado con Éxito</small>
+                                                    <small class="text-muted">Ref: <%= cobro.comprobante || 'N/A' %></small>
                                                 <% } %>
                                             </td>
                                         </tr>
                                     <% }); %>
                                 <% } else { %>
-                                    <tr>
-                                        <td colspan="5" style="text-align: center; color: #888; padding: 1.5rem;">No hay mensualidades ni cobros generados para este alumno.</td>
-                                    </tr>
+                                    <tr><td colspan="5" class="text-center">No hay cobros registrados.</td></tr>
                                 <% } %>
                             </tbody>
                         </table>
                     </div>
+
+                    <% if (est.solvente) { %>
+                        
+                        <div class="solsitos-banner">
+                            <div>
+                                <h4 class="solsitos-title">🎼 Solsitos Acumulados</h4>
+                                <p class="solsitos-desc">Puntos positivos registrados por tus profesores.</p>
+                            </div>
+                            <div class="solsitos-badge">
+                                <% 
+                                    const totalS = est.solsitosHistorial ? est.solsitosHistorial.filter(s => (s.cantidad || 0) > 0).reduce((acc, s) => acc + s.cantidad, 0) : 0;
+                                %>
+                                🎼 +<%= totalS %> Solsitos
+                            </div>
+                        </div>
+
+                        <h3 class="section-title">📚 Seguimiento Académico por Cátedra</h3>
+                        
+                        <div class="catedras-nav">
+                            <% est.catedrasAlumno.forEach((cat, cIndex) => { %>
+                                <button onclick="cambiarCatTab('<%= est.id %>', '<%= cat %>', event)" class="cat-btn <% if (cIndex === 0) { %>activo<% } else { %>inactivo<% } %>">
+                                    <%= cat %>
+                                </button>
+                            <% }); %>
+                        </div>
+
+                        <% est.catedrasAlumno.forEach((cat, cIndex) => { %>
+                            <div id="cat-content-<%= est.id %>-<%= cat %>" class="cat-tab-content-<%= est.id %> cat-content-box" style="display: <% if (cIndex === 0) { %>block<% } else { %>none<% } %>;">
+                                
+                                <% 
+                                    const infoAsis = est.resumenAsistenciaPorCatedra[cat] || { presente: 0, total: 0 };
+                                    const notasCat = est.calificacionesHistorial.filter(cl => (cl.catedra || '').toLowerCase().includes(cat.toLowerCase()));
+                                %>
+
+                                <div class="asistencia-box">
+                                    <span class="asis-label">📅 Control de Asistencia:</span>
+                                    <span class="asis-badge">
+                                        Asistencias: <%= infoAsis.presente %> / <%= infoAsis.total %> clases
+                                    </span>
+                                </div>
+
+                                <h4 class="eval-title">📝 Calificaciones y Evaluaciones</h4>
+                                <% if (notasCat && notasCat.length > 0) { %>
+                                    <div class="table-responsive">
+                                        <table class="table-custom" style="margin-top: 0;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Período / Lapso</th>
+                                                    <th>Objetivo</th>
+                                                    <th>Indicador de Evaluación</th>
+                                                    <th>Calificación</th>
+                                                    <th>Observación</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% notasCat.forEach(n => { %>
+                                                    <tr>
+                                                        <td><%= n.periodo %></td>
+                                                        <td><strong><%= n.objetivo %></strong></td>
+                                                        <td><%= n.indicador %></td>
+                                                        <td class="nota-val"><%= n.calificacion %></td>
+                                                        <td><%= n.observacion || 'N/A' %></td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <% } else { %>
+                                    <p class="text-italic">No hay calificaciones registradas en esta cátedra todavía.</p>
+                                <% } %>
+
+                            </div>
+                        <% }); %>
+
+                    <% } else { %>
+                        <div class="bloqueo-box">
+                            <strong>🔒 Información Académica Bloqueada</strong>
+                            <p class="bloqueo-text">Posee cuotas pendientes o en revisión. Reporte su pago para desbloquear calificaciones y asistencias.</p>
+                        </div>
+                    <% } %>
+
                 </div>
             <% }); %>
+
+        <% } else { %>
+            <div class="student-card active text-center text-muted">
+                <p>No se encontraron registros de estudiantes.</p>
+            </div>
         <% } %>
     </div>
 
+    <script>
+        function cambiarEstudianteTab(estId, evt) {
+            document.querySelectorAll('.student-card').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.hermano-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('student-content-' + estId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        function cambiarCatTab(estId, catedraNombre, evt) {
+            document.querySelectorAll('.cat-tab-content-' + estId).forEach(el => el.style.display = 'none');
+            const botones = evt.currentTarget.parentElement.querySelectorAll('button');
+            botones.forEach(btn => {
+                btn.classList.remove('activo');
+                btn.classList.add('inactivo');
+            });
+            document.getElementById('cat-content-' + estId + '-' + catedraNombre).style.display = 'block';
+            evt.currentTarget.classList.remove('inactivo');
+            evt.currentTarget.classList.add('activo');
+        }
+    </script>
 </body>
 </html>

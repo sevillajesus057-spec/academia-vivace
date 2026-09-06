@@ -11,7 +11,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 db.serialize(() => {
-    // 1. Tabla Estudiantes
     db.run(`CREATE TABLE IF NOT EXISTS estudiantes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre_estudiante TEXT NOT NULL,
@@ -29,10 +28,10 @@ db.serialize(() => {
         instrumento TEXT NOT NULL,
         nivel TEXT NOT NULL,
         observaciones_medicas TEXT,
-        codigo_qr TEXT
+        codigo_qr TEXT,
+        exonerado INTEGER DEFAULT 0
     )`);
 
-    // 2. Tabla Cobros Estudiantes
     db.run(`CREATE TABLE IF NOT EXISTS cobros (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         id_estudiante INTEGER NOT NULL,
@@ -42,14 +41,13 @@ db.serialize(() => {
         estatus TEXT DEFAULT 'Pendiente',
         comprobante TEXT,
         fecha_registro DATE DEFAULT CURRENT_DATE,
-        FOREIGN KEY (id_estudiante) REFERENCES estudiantes(id)
+        FOREIGN KEY (id_estudiante) REFERENCES estudiantes(id) ON DELETE CASCADE
     )`);
 
-    // 3. Tabla Egresos / Libro SENIAT
     db.run(`CREATE TABLE IF NOT EXISTS egresos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        proveedor TEXT NOT NULL,
-        rif TEXT NOT NULL,
+        proveedor TEXT,
+        rif TEXT,
         numero_factura TEXT,
         numero_control TEXT,
         concepto TEXT NOT NULL,
@@ -62,10 +60,9 @@ db.serialize(() => {
         fecha_egreso DATE DEFAULT CURRENT_DATE
     )`);
 
-    // 4. Tabla Personal / Profesores
     db.run(`CREATE TABLE IF NOT EXISTS personal (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre_empleado TEXT NOT NULL,
+        nombre_empleado TEXT,
         cedula TEXT,
         cargo TEXT NOT NULL,
         telefono TEXT,
@@ -77,7 +74,6 @@ db.serialize(() => {
         pago_movil_datos TEXT
     )`);
 
-    // 5. Tabla Pagos y Adelantos de Nómina
     db.run(`CREATE TABLE IF NOT EXISTS pagos_personal (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         id_personal INTEGER NOT NULL,
@@ -88,6 +84,40 @@ db.serialize(() => {
         referencia TEXT NOT NULL,
         fecha_pago DATE NOT NULL,
         observacion TEXT,
+        FOREIGN KEY (id_personal) REFERENCES personal(id)
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS asistencia_clases (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        estudiante_key TEXT NOT NULL,
+        id_personal INTEGER NOT NULL,
+        catedra TEXT NOT NULL,
+        fecha TEXT NOT NULL,
+        estado TEXT NOT NULL,
+        FOREIGN KEY (id_personal) REFERENCES personal(id)
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS calificaciones (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        estudiante_key TEXT NOT NULL,
+        id_personal INTEGER NOT NULL,
+        periodo TEXT NOT NULL,
+        catedra TEXT NOT NULL,
+        objetivo TEXT NOT NULL,
+        indicador TEXT NOT NULL,
+        calificacion TEXT NOT NULL,
+        observacion TEXT,
+        FOREIGN KEY (id_personal) REFERENCES personal(id)
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS solsitos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        estudiante_key TEXT NOT NULL,
+        id_personal INTEGER NOT NULL,
+        cantidad INTEGER NOT NULL,
+        motivo TEXT,
+        periodo TEXT NOT NULL,
+        fecha_registro DATE DEFAULT CURRENT_DATE,
         FOREIGN KEY (id_personal) REFERENCES personal(id)
     )`);
 });

@@ -3,41 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Profesores - Academia Vivace</title>
+    <title>Acceso Docentes - Academia Vivace</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #1e3c72; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1.5rem; }
-        .card-login { background: white; width: 100%; max-width: 420px; padding: 2.5rem 2rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); text-align: center; }
-        .logo-login { max-width: 180px; height: auto; margin-bottom: 1rem; }
-        .title-login { color: #1e3c72; font-size: 1.5rem; margin-bottom: 0.3rem; }
-        .form-group { text-align: left; margin-bottom: 1.2rem; }
-        .form-group label { display: block; font-weight: bold; font-size: 0.85rem; color: #444; margin-bottom: 0.4rem; }
-        .form-group input { width: 100%; padding: 12px 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; }
-        .btn-login { background: #1e3c72; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; }
-        .alert-error { background: #fdedec; color: #c0392b; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1.2rem; border: 1px solid #f5c6cb; text-align: center; }
+        body { background: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; color: #333; }
+        .login-card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
+        .academy-logo { max-width: 180px; height: auto; margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1.2rem; text-align: left; }
+        .form-group label { display: block; font-weight: bold; font-size: 0.9rem; margin-bottom: 0.4rem; color: #444; }
+        .form-group input { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+        .btn-submit { background: #1e3c72; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: background 0.3s; }
+        .btn-submit:hover { background: #162c54; }
+        .error-msg { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1rem; }
+        .link-volver { display: block; margin-top: 1rem; color: #666; text-decoration: none; font-size: 0.85rem; }
+        .link-volver:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
-    <div class="card-login">
-        <img src="/img/logo_vivace.png" alt="Academia Vivace" class="logo-login">
-        <h1 class="title-login">Portal de Profesores</h1>
-        <p style="color: #666; font-size: 0.88rem; margin-bottom: 1.5rem;">Consulta tu recibo digital y abonos de nómina</p>
+    <div class="login-card">
+        <img src="/img/logo_vivace.png" alt="Logo Academia Vivace" class="academy-logo">
+        <h2 style="color: #1e3c72; margin-bottom: 0.5rem; font-size: 1.5rem;">Portal del Personal</h2>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 1.5rem;">Ingresa tu correo registrado en nómina</p>
 
         <% if (error) { %>
-            <div class="alert-error"><%= error %></div>
+            <div class="error-msg"><%= error %></div>
         <% } %>
 
         <form action="/docente/login" method="POST">
             <div class="form-group">
-                <label for="email">Correo Electrónico Registrado</label>
-                <input type="email" id="email" name="email" placeholder="profesor@vivace.com" required autofocus>
+                <label>Correo Electrónico</label>
+                <input type="email" name="email" required placeholder="profesor@correo.com">
             </div>
-            <button type="submit" class="btn-login">Ingresar al Portal</button>
+            <button type="submit" class="btn-submit">Acceder a mi Recibo / Portal</button>
         </form>
 
-        <a href="/" style="display:inline-block; margin-top:1.5rem; color:#666; font-size:0.85rem; text-decoration:none;">⬅ Volver al Inicio</a>
+        <a href="/" class="link-volver">⬅ Volver al Inicio</a>
     </div>
 
 </body>

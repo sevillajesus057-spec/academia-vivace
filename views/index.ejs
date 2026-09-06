@@ -7,43 +7,67 @@
     <link rel="stylesheet" href="/css/style.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1.5rem; }
-        .card-login { background: white; width: 100%; max-width: 450px; padding: 2.5rem 2rem; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); text-align: center; }
-        .logo-login { max-width: 200px; height: auto; margin-bottom: 1rem; }
-        .title-login { color: #1e3c72; font-size: 1.6rem; margin-bottom: 0.4rem; }
-        .desc-login { color: #666; font-size: 0.9rem; margin-bottom: 1.8rem; }
-        .form-group { text-align: left; margin-bottom: 1.2rem; }
-        .form-group label { display: block; font-weight: bold; font-size: 0.88rem; color: #444; margin-bottom: 0.4rem; }
-        .form-group input { width: 100%; padding: 12px 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
-        .form-group input:focus { border-color: #1e3c72; }
-        .btn-ingresar { background: #1e3c72; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        .btn-ingresar:hover { background: #162c54; }
-        .alert-error { background: #fdedec; color: #c0392b; padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1rem; border: 1px solid #f5c6cb; }
-        .link-admin { display: inline-block; margin-top: 1.5rem; color: #1e3c72; text-decoration: none; font-size: 0.85rem; font-weight: bold; }
-        .link-admin:hover { text-decoration: underline; }
+        body { background: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1rem; color: #333; }
+        .portal-container { width: 100%; max-width: 600px; text-align: center; }
+        .academy-logo { max-width: 200px; height: auto; margin-bottom: 1rem; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+        .access-card { background: white; padding: 2rem 1.5rem; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-decoration: none; color: inherit; transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer; }
+        .access-card:hover { transform: translateY(-4px); border-color: #1e3c72; box-shadow: 0 8px 25px rgba(30,60,114,0.12); }
+        .card-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .card-title { color: #1e3c72; font-size: 1.2rem; margin-bottom: 0.3rem; }
+        .card-desc { color: #666; font-size: 0.85rem; }
+        .admin-link { margin-top: 1.5rem; display: inline-block; color: #888; font-size: 0.85rem; text-decoration: none; }
+        .admin-link:hover { color: #1e3c72; text-decoration: underline; }
     </style>
 </head>
 <body>
 
-    <div class="card-login">
-        <img src="/img/logo_vivace.png" alt="Academia Vivace" class="logo-login">
-        <h1 class="title-login">Portal del Representante</h1>
-        <p class="desc-login">Consulta la solvencia de tu representado y reporta tus pagos móviles.</p>
+    <div class="portal-container">
+        <img src="/img/logo_vivace.png" alt="Logo Academia Vivace" class="academy-logo">
+        <h1 style="color: #1e3c72; font-size: 1.8rem; margin-bottom: 0.3rem;">Academia de Música Vivace</h1>
+        <p style="color: #666; font-size: 1rem;">Selecciona tu portal de acceso</p>
 
-        <% if (error) { %>
-            <div class="alert-error"><%= error %></div>
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div style="background: #f8f9fa; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; border-radius: 6px; margin-top: 1rem; font-size: 0.9rem;">
+                <%= error %>
+            </div>
         <% } %>
 
-        <form action="/representante/login" method="POST">
-            <div class="form-group">
-                <label for="busqueda">Cédula o Correo Electrónico del Representante</label>
-                <input type="text" id="busqueda" name="busqueda" placeholder="Ej: V-15123456 o correo@ejemplo.com" required>
+        <div class="cards-grid">
+            <!-- Acceso Representantes -->
+            <div onclick="mostrarInputRepresentante()" class="access-card">
+                <div class="card-icon">👨‍👩‍👧‍👦</div>
+                <h3 class="card-title">Representantes</h3>
+                <p class="card-desc">Consulta de notas, deudas y reporte de pagos móviles</p>
             </div>
-            <button type="submit" class="btn-ingresar">Ingresar al Portal</button>
-        </form>
 
-        <a href="/admin" class="link-admin">🔐 Acceso al Panel Administrativo</a>
+            <!-- Acceso Personal / Docentes -->
+            <a href="/docente/login" class="access-card">
+                <div class="card-icon">🎼</div>
+                <h3 class="card-title">Personal Docente</h3>
+                <p class="card-desc">Recibos de pago, sueldos y bonificaciones en Bs.</p>
+            </a>
+        </div>
+
+        <!-- Formulario oculto de representantes -->
+        <div id="boxRepresentante" style="display: none; background: white; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: left;">
+            <h3 style="color: #1e3c72; margin-bottom: 0.8rem; font-size: 1.1rem;">Consulta de Representante</h3>
+            <form action="/representante/login" method="POST" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <input type="text" name="busqueda" required placeholder="Cédula o Correo del representante..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; min-width: 180px;">
+                <button type="submit" style="background: #27ae60; color: white; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">Ingresar</button>
+            </form>
+        </div>
+
+        <div>
+            <a href="/admin/login" class="admin-link">🔒 Acceso Administrativo (Secretaría y Dirección)</a>
+        </div>
     </div>
 
+    <script>
+        function mostrarInputRepresentante() {
+            const box = document.getElementById('boxRepresentante');
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
 </body>
 </html>
