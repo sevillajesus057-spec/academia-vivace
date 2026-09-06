@@ -22,7 +22,6 @@ app.use(session({
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'vivace2026';
 
-// Variable de control global para autorización de boletines
 let boletinAutorizado = false;
 
 function requerirAuthAdmin(req, res, next) {
@@ -30,10 +29,7 @@ function requerirAuthAdmin(req, res, next) {
     res.redirect('/admin/login');
 }
 
-// ----------------------------------------------------
-// TASA BCV AUTOMÁTICA EN TIEMPO REAL CON API PÚBLICA
-// ----------------------------------------------------
-let tasaBCVCached = 813.74; // Valor de respaldo por defecto
+let tasaBCVCached = 813.74;
 let ultimaActualizacionTasa = 0;
 
 async function obtenerTasaBCVOficial() {
@@ -48,9 +44,7 @@ async function obtenerTasaBCVOficial() {
             tasaBCVCached = Number(data.price);
             ultimaActualizacionTasa = ahora;
         }
-    } catch (e) {
-        // Silenciado para evitar saturar la consola localmente, usando respaldo previo
-    }
+    } catch (e) {}
     return tasaBCVCached;
 }
 
@@ -78,10 +72,6 @@ function generarEstudianteKey(nombre, email) {
     const e = (email || '').trim().toLowerCase();
     return `${n}__${e}`;
 }
-
-// ==========================================
-// RUTAS PÚBLICAS Y DE REPRESENTANTES
-// ==========================================
 
 app.get('/', (req, res) => {
     res.render('index', { error: null });
@@ -229,7 +219,6 @@ app.get('/representante/portal/:id', (req, res) => {
     });
 });
 
-// RUTA ACTUALIZADA PARA EL BOLETIN PDF CON AGRUPACIÓN DE CALIFICACIONES Y ASISTENCIAS
 app.get('/representante/boletin/:id', (req, res) => {
     if (!boletinAutorizado) {
         return res.status(403).send("Los boletines se encuentran bloqueados temporalmente por la dirección.");
@@ -245,27 +234,19 @@ app.get('/representante/boletin/:id', (req, res) => {
             db.all(`SELECT * FROM asistencia_clases WHERE estudiante_key = ?`, [estKey], (err, asistencias) => {
                 if (err) asistencias = [];
 
-                // Agrupar calificaciones por cátedra
                 const calificacionesAgrupadas = {};
                 calificaciones.forEach(c => {
                     const cat = c.catedra || 'General';
-                    if (!calificacionesAgrupadas[cat]) {
-                        calificacionesAgrupadas[cat] = [];
-                    }
+                    if (!calificacionesAgrupadas[cat]) calificacionesAgrupadas[cat] = [];
                     calificacionesAgrupadas[cat].push(c);
                 });
 
-                // Consolidar asistencia por cátedra (Total clases y Asistencias)
                 const asistenciaMapa = {};
                 asistencias.forEach(a => {
                     const cat = a.catedra || 'General';
-                    if (!asistenciaMapa[cat]) {
-                        asistenciaMapa[cat] = { totalClases: 0, totalPresentes: 0 };
-                    }
+                    if (!asistenciaMapa[cat]) asistenciaMapa[cat] = { totalClases: 0, totalPresentes: 0 };
                     asistenciaMapa[cat].totalClases += 1;
-                    if (a.estado === 'Presente') {
-                        asistenciaMapa[cat].totalPresentes += 1;
-                    }
+                    if (a.estado === 'Presente') asistenciaMapa[cat].totalPresentes += 1;
                 });
 
                 const asistenciaResumen = Object.keys(asistenciaMapa).map(cat => ({
@@ -305,10 +286,6 @@ app.get('/carnet/:codigo_qr', (req, res) => {
         });
     });
 });
-
-// ==========================================
-// MÓDULO DOCENTES Y PERSONAL ADMINISTRATIVO
-// ==========================================
 
 app.get('/docente/login', (req, res) => {
     res.render('docente_login', { error: null });
@@ -493,10 +470,6 @@ app.post('/docente/guardar-solsito-individual', (req, res) => {
     });
 });
 
-// ==========================================
-// AUTENTICACIÓN Y PANEL ADMINISTRATIVO
-// ==========================================
-
 app.get('/admin/login', (req, res) => {
     if (req.session && req.session.esAdmin) return res.redirect('/admin');
     res.render('admin_login', { error: null });
@@ -515,7 +488,6 @@ app.get('/admin/logout', (req, res) => {
     req.session.destroy(() => res.redirect('/admin/login'));
 });
 
-// Ruta para alternar autorización de boletines
 app.post('/admin/toggle-boletin', requerirAuthAdmin, (req, res) => {
     boletinAutorizado = !boletinAutorizado;
     res.redirect('/admin');
@@ -671,16 +643,31 @@ app.post('/admin/modificar-calificacion', requerirAuthAdmin, (req, res) => {
 });
 
 app.post('/admin/agregar-estudiante', requerirAuthAdmin, (req, res) => {
-    const { nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto, direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumento, nivel, observaciones_medicas, exonerado } = req.body;
+    const { nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto, direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumentos_multiples, instrumento: instrumentoUnico, nivel, observaciones_medicas, exonerado } = req.body;
     
+    // Unir los instrumentos seleccionados si vienen varios por checkbox
+    let instrumentoFinal = instrumentoUnico || '';
+    if (instrumentos_multiples) {
+        if (Array.isArray(instrumentos_multiples)) {
+            instrumentoFinal = instrumentos_multiples.join(', ');
+        } else {
+            instrumentoFinal = instrumentos_multiples;
+        }
+    }
+
     const codigo_qr = 'VIVACE-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
     const mesAnio = getMesAnioActual();
     const nombreMes = getNombreMesActual();
     const esExonerado = exonerado ? 1 : 0;
 
     db.run(`INSERT INTO estudiantes (nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto, direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumento, nivel, observaciones_medicas, codigo_qr, exonerado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-    [nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto || '', direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumento, nivel, observaciones_medicas, codigo_qr, esExonerado], function(err) {
-        if (err || esExonerado) return res.redirect('/admin');
+    [nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto || '', direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumentoFinal, nivel, observaciones_medicas, codigo_qr, esExonerado], function(err) {
+        if (err) {
+            console.error("Error al insertar estudiante:", err.message);
+            return res.redirect('/admin');
+        }
+        if (esExonerado) return res.redirect('/admin');
+        
         const idEst = this.lastID;
         db.run(`INSERT INTO cobros (id_estudiante, concepto, monto_usd, mes_anio, estatus) VALUES (?, 'Inscripción Matrícula Inicial', 5.00, ?, 'Pendiente')`, [idEst, mesAnio], () => {
             db.run(`INSERT INTO cobros (id_estudiante, concepto, monto_usd, mes_anio, estatus) VALUES (?, ?, 10.00, ?, 'Pendiente')`, [idEst, `Mensualidad ${nombreMes}`, mesAnio], () => {
@@ -791,9 +778,19 @@ app.post('/admin/conciliar-pago', requerirAuthAdmin, (req, res) => {
 });
 
 app.post('/admin/agregar-personal', requerirAuthAdmin, (req, res) => {
-    const { nombre_empleado, cedula, cargo, telefono, email, horas_mes, sueldo_base_ves, bono_alimentacion_usd, bono_transporte_usd, pago_movil_datos } = req.body;
+    const { nombre_empleado, cedula, cargos_multiples, cargo: cargoUnico, telefono, email, horas_mes, sueldo_base_ves, bono_alimentacion_usd, bono_transporte_usd, pago_movil_datos } = req.body;
+    
+    let cargoFinal = cargoUnico || '';
+    if (cargos_multiples) {
+        if (Array.isArray(cargos_multiples)) {
+            cargoFinal = cargos_multiples.join(', ');
+        } else {
+            cargoFinal = cargos_multiples;
+        }
+    }
+
     db.run(`INSERT INTO personal (nombre_empleado, cedula, cargo, telefono, email, horas_mes, sueldo_base_ves, bono_alimentacion_usd, bono_transporte_usd, pago_movil_datos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-    [nombre_empleado, cedula, cargo, telefono, email, horas_mes || 0, parseFloat(sueldo_base_ves) || 0, parseFloat(bono_alimentacion_usd) || 0, parseFloat(bono_transporte_usd) || 0, pago_movil_datos], () => {
+    [nombre_empleado, cedula, cargoFinal, telefono, email, horas_mes || 0, parseFloat(sueldo_base_ves) || 0, parseFloat(bono_alimentacion_usd) || 0, parseFloat(bono_transporte_usd) || 0, pago_movil_datos], () => {
         res.redirect('/admin');
     });
 });
