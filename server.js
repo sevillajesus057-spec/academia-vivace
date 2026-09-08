@@ -310,19 +310,23 @@ app.get('/representante/portal/:id', (req, res) => {
     });
 });
 
-app.get('/representante/boletin/:id', (req, res) => {
+const { GoogleGenAI } = require('@google/genai');
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }); // O coloca tu API key directamente si prefieres
+
+app.get('/representante/boletin/:id', async (req, res) => {
     if (!boletinAutorizado) {
         return res.status(403).send("Los boletines se encuentran bloqueados temporalmente por la dirección.");
     }
     const idEstudiante = req.params.id;
-    db.get(`SELECT * FROM estudiantes WHERE id = ?`, [idEstudiante], (err, estudiante) => {
+    
+    db.get(`SELECT * FROM estudiantes WHERE id = ?`, [idEstudiante], async (err, estudiante) => {
         if (err || !estudiante) return res.status(404).send("Estudiante no encontrado.");
 
         const estKey = generarEstudianteKey(estudiante.nombre_estudiante, estudiante.email_representante);
 
-        db.all(`SELECT * FROM calificaciones WHERE estudiante_key = ?`, [estKey], (err, calificaciones) => {
+        db.all(`SELECT * FROM calificaciones WHERE estudiante_key = ?`, [estKey], async (err, calificaciones) => {
             if (err) calificaciones = [];
-            db.all(`SELECT * FROM asistencia_clases WHERE estudiante_key = ?`, [estKey], (err, asistencias) => {
+            db.all(`SELECT * FROM asistencia_clases WHERE estudiante_key = ?`, [estKey], async (err, asistencias) => {
                 if (err) asistencias = [];
 
                 const calificacionesAgrupadas = {};
@@ -346,11 +350,34 @@ app.get('/representante/boletin/:id', (req, res) => {
                     totalPresentes: asistenciaMapa[cat].totalPresentes
                 }));
 
+                // ==========================================
+                // GENERACIÓN DE OBSERVACIÓN AUTOMÁTICA CON IA
+                // ==========================================
+                let observacionIA = "Estudiante destacado por su excelente compromiso y evolución en la academia.";
+                try {
+                    const prompt = `Actúa como el director de la Academia de Música Vivace. Escribe una observación académica formal, motivadora, elegante y personalizada (de un solo párrafo de unas 4 o 5 líneas) para el boletín del estudiante ${estudiante.nombre_estudiante}, quien cursa la especialidad de ${estudiante.instrumento || 'Música'}. 
+                    Sus calificaciones son: ${JSON.stringify(calificaciones)} 
+                    y su resumen de asistencia es: ${JSON.stringify(asistenciaResumen)}. 
+                    Destaca sus logros con un tono cálido y artístico, mencionando su evolución musical.`;
+
+                    const response = await ai.models.generateContent({
+                        model: 'gemini-2.5-flash',
+                        contents: prompt,
+                    });
+
+                    if (response && response.text) {
+                        observacionIA = response.text.trim();
+                    }
+                } catch (error) {
+                    console.error("⚠️ Error generando observación con IA, usando respaldo:", error.message);
+                }
+
                 res.render('boletin_pdf', {
                     estudiante: {
                         ...estudiante,
                         calificacionesAgrupadas,
-                        asistenciaResumen
+                        asistenciaResumen,
+                        observacionIA
                     },
                     tasaBCV: req.tasaBCV
                 });

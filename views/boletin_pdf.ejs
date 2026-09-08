@@ -324,26 +324,12 @@
             </div>
         <% } %>
 
-        <!-- OBSERVACIONES -->
+<!-- OBSERVACIONES GENERADAS POR IA -->
         <div class="observaciones-box">
             <h4>Observaciones del Rendimiento Académico</h4>
-            <p>
-                <% 
-                   let obsTexto = '';
-                   if (estudiante.calificacionesAgrupadas) {
-                       Object.keys(estudiante.calificacionesAgrupadas).forEach(cat => {
-                           estudiante.calificacionesAgrupadas[cat].forEach(item => {
-                               if (item.observacion && item.observacion.trim() !== '') {
-                                   obsTexto += item.observacion + ' ';
-                               }
-                           });
-                       });
-                   }
-                %>
-                <%= obsTexto.trim() !== '' ? obsTexto : (estudiante.observaciones_medicas || 'Estudiante destacado por su excelente compromiso, evolución artística y notable entusiasmo en cada una de sus cátedras musicales.') %>
-            </p>
+            <p><%= estudiante.observacionIA %></p>
         </div>
-
+        
         <!-- FIRMA ÚNICA -->
         <div class="firma-centro">
             <div class="firma-linea">
