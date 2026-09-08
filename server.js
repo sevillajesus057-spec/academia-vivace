@@ -29,23 +29,16 @@ function requerirAuthAdmin(req, res, next) {
     res.redirect('/admin/login');
 }
 
-let tasaBCVCached = 813.74;
-let ultimaActualizacionTasa = 0;
-
 async function obtenerTasaBCVOficial() {
-    const ahora = Date.now();
-    if (ahora - ultimaActualizacionTasa < 3600000 && tasaBCVCached) {
-        return tasaBCVCached;
-    }
-    try {
-        const response = await fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?monitor=bcv');
-        const data = await response.json();
-        if (data && data.price) {
-            tasaBCVCached = Number(data.price);
-            ultimaActualizacionTasa = ahora;
-        }
-    } catch (e) {}
-    return tasaBCVCached;
+    return new Promise((resolve) => {
+        db.get("SELECT valor FROM configuracion WHERE clave = 'tasa_bcv'", [], (err, row) => {
+            if (err || !row || !row.valor) {
+                resolve(814.69); // Respaldo por seguridad
+            } else {
+                resolve(Number(row.valor));
+            }
+        });
+    });
 }
 
 app.use(async (req, res, next) => {
@@ -493,9 +486,37 @@ app.post('/admin/toggle-boletin', requerirAuthAdmin, (req, res) => {
     res.redirect('/admin');
 });
 
+app.post('/admin/actualizar-tasa', requerirAuthAdmin, (req, res) => {
+    const { tasa } = req.body;
+    console.log("📥 Intentando actualizar tasa a:", tasa);
+    
+    if (tasa) {
+        db.run(`UPDATE configuracion SET valor = ? WHERE clave = 'tasa_bcv'`, [tasa], function(err) {
+            if (err) {
+                console.error("❌ Error en UPDATE tasa:", err.message);
+            }
+            if (err || this.changes === 0) {
+                db.run(`INSERT OR REPLACE INTO configuracion (clave, valor) VALUES ('tasa_bcv', ?)`, [tasa], (errInsert) => {
+                    if (errInsert) {
+                        console.error("❌ Error en INSERT tasa:", errInsert.message);
+                    } else {
+                        console.log("✔ Tasa guardada con INSERT correctamente.");
+                    }
+                    res.redirect('/admin');
+                });
+            } else {
+                console.log("✔ Tasa actualizada con UPDATE correctamente.");
+                res.redirect('/admin');
+            }
+        });
+    } else {
+        res.redirect('/admin');
+    }
+});
+
 app.get('/admin', requerirAuthAdmin, (req, res) => {
     try {
-        const tasaBCV = req.tasaBCV || 813.74;
+        const tasaBCV = req.tasaBCV || 814.69;
         const mesAnioActual = getMesAnioActual();
         const nombreMesActual = getNombreMesActual();
 
@@ -645,7 +666,6 @@ app.post('/admin/modificar-calificacion', requerirAuthAdmin, (req, res) => {
 app.post('/admin/agregar-estudiante', requerirAuthAdmin, (req, res) => {
     const { nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto, direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumentos_multiples, instrumento: instrumentoUnico, nivel, observaciones_medicas, exonerado } = req.body;
     
-    // Unir los instrumentos seleccionados si vienen varios por checkbox
     let instrumentoFinal = instrumentoUnico || '';
     if (instrumentos_multiples) {
         if (Array.isArray(instrumentos_multiples)) {
@@ -819,6 +839,13 @@ app.post('/admin/registrar-pago-individual-docente', requerirAuthAdmin, (req, re
             });
         });
     });
+});
+
+app.get('/', (req, res) => {
+    if (req.session && req.session.esAdmin) {
+        return res.redirect('/admin');
+    }
+    res.redirect('/admin/login');
 });
 
 app.listen(PORT, () => {

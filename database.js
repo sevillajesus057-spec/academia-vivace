@@ -57,6 +57,19 @@ const db = {
 // Inicializar tablas automáticamente en la nube
 async function inicializarTablas() {
     try {
+        // Tabla de configuración para la Tasa BCV oficial
+        await client.execute(`
+            CREATE TABLE IF NOT EXISTS configuracion (
+                clave TEXT PRIMARY KEY,
+                valor TEXT
+            )
+        `);
+
+        // Insertar valor inicial de respaldo si no existe
+        await client.execute(`
+            INSERT OR IGNORE INTO configuracion (clave, valor) VALUES ('tasa_bcv', '814.69')
+        `);
+
         await client.execute(`
             CREATE TABLE IF NOT EXISTS estudiantes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
