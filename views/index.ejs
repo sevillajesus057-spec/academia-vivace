@@ -8,14 +8,14 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 1rem; color: #333; }
-        .portal-container { width: 100%; max-width: 600px; text-align: center; }
-        .academy-logo { max-width: 200px; height: auto; margin-bottom: 1rem; }
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-        .access-card { background: white; padding: 2rem 1.5rem; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-decoration: none; color: inherit; transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer; }
+        .portal-container { width: 100%; max-width: 650px; text-align: center; }
+        .academy-logo { max-width: 180px; height: auto; margin-bottom: 0.5rem; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+        .access-card { background: white; padding: 1.5rem 1rem; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-decoration: none; color: inherit; transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer; }
         .access-card:hover { transform: translateY(-4px); border-color: #1e3c72; box-shadow: 0 8px 25px rgba(30,60,114,0.12); }
-        .card-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .card-title { color: #1e3c72; font-size: 1.2rem; margin-bottom: 0.3rem; }
-        .card-desc { color: #666; font-size: 0.85rem; }
+        .card-icon { font-size: 2.2rem; margin-bottom: 0.4rem; }
+        .card-title { color: #1e3c72; font-size: 1.1rem; margin-bottom: 0.3rem; }
+        .card-desc { color: #666; font-size: 0.8rem; }
         .admin-link { margin-top: 1.5rem; display: inline-block; color: #888; font-size: 0.85rem; text-decoration: none; }
         .admin-link:hover { color: #1e3c72; text-decoration: underline; }
     </style>
@@ -24,8 +24,8 @@
 
     <div class="portal-container">
         <img src="/img/logo_vivace.png" alt="Logo Academia Vivace" class="academy-logo">
-        <h1 style="color: #1e3c72; font-size: 1.8rem; margin-bottom: 0.3rem;">Academia de Música Vivace</h1>
-        <p style="color: #666; font-size: 1rem;">Selecciona tu portal de acceso</p>
+        <h1 style="color: #1e3c72; font-size: 1.6rem; margin-bottom: 0.2rem;">Academia de Música Vivace</h1>
+        <p style="color: #666; font-size: 0.95rem;">Selecciona una opción para continuar</p>
 
         <% if (typeof error !== 'undefined' && error) { %>
             <div style="background: #f8f9fa; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; border-radius: 6px; margin-top: 1rem; font-size: 0.9rem;">
@@ -38,23 +38,87 @@
             <div onclick="mostrarInputRepresentante()" class="access-card">
                 <div class="card-icon">👨‍👩‍👧‍👦</div>
                 <h3 class="card-title">Representantes</h3>
-                <p class="card-desc">Consulta de notas, deudas y reporte de pagos móviles</p>
+                <p class="card-desc">Consulta de notas, deudas y pagos</p>
+            </div>
+
+            <!-- Botón / Tarjeta de Autoregistro de Nuevos Alumnos -->
+            <div onclick="mostrarFormRegistro()" class="access-card" style="border-color: #2a9d8f;">
+                <div class="card-icon">📝</div>
+                <h3 class="card-title" style="color: #2a9d8f;">Nuevo Ingreso</h3>
+                <p class="card-desc">Registra a tu estudiante e ingresa al portal</p>
             </div>
 
             <!-- Acceso Personal / Docentes -->
             <a href="/docente/login" class="access-card">
                 <div class="card-icon">🎼</div>
-                <h3 class="card-title">Personal Docente</h3>
-                <p class="card-desc">Recibos de pago, sueldos y bonificaciones en Bs.</p>
+                <h3 class="card-title">Personal</h3>
+                <p class="card-desc">Recibos de pago y nómina</p>
             </a>
         </div>
 
-        <!-- Formulario oculto de representantes -->
+        <!-- Formulario oculto de consulta de representantes -->
         <div id="boxRepresentante" style="display: none; background: white; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: left;">
             <h3 style="color: #1e3c72; margin-bottom: 0.8rem; font-size: 1.1rem;">Consulta de Representante</h3>
             <form action="/representante/login" method="POST" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <input type="text" name="busqueda" required placeholder="Cédula o Correo del representante..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; min-width: 180px;">
                 <button type="submit" style="background: #27ae60; color: white; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">Ingresar</button>
+            </form>
+        </div>
+
+        <!-- Formulario oculto de Nuevo Registro (Paso 3) -->
+        <div id="boxRegistro" style="display: none; background: white; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: left;">
+            <h3 style="color: #2a9d8f; margin-bottom: 0.5rem; font-size: 1.2rem;">📝 Registro de Nuevo Estudiante</h3>
+            <p style="color: #666; font-size: 0.85rem; margin-bottom: 1.2rem;">Completa los datos para crear el expediente y acceder al portal familiar.</p>
+
+            <form action="/representante/registrar" method="POST" style="display: flex; flex-direction: column; gap: 0.9rem;">
+                <fieldset style="border: 1px solid #ddd; padding: 0.8rem; border-radius: 6px;">
+                    <legend style="font-weight: bold; font-size: 0.85rem; color: #1e3c72;">Datos del Alumno</legend>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin-top: 0.4rem;">
+                        <div><label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Nombres y Apellidos *</label><input type="text" name="nombre_estudiante" required placeholder="Ej: Santiago Sevilla" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;"></div>
+                        <div><label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Cédula Escolar</label><input type="text" name="cedula_estudiante" placeholder="Ej: V-35123456" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;"></div>
+                        <div><label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Fecha de Nacimiento</label><input type="date" name="fecha_nacimiento" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;"></div>
+                        <div><label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Edad</label><input type="number" name="edad" placeholder="Ej: 10" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;"></div>
+                    </div>
+                </fieldset>
+
+                <fieldset style="border: 1px solid #ddd; padding: 0.8rem; border-radius: 6px;">
+                    <legend style="font-weight: bold; font-size: 0.85rem; color: #1e3c72;">Datos del Representante</legend>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin-top: 0.4rem;">
+                        <div><label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Nombre del Representante *</label><input type="text" name="nombre_representante" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;"></div>
+                        <div><label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Cédula del Representante *</label><input type="text" name="cedula_representante" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;"></div>
+                        <div><label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Teléfono / WhatsApp *</label><input type="text" name="telefono_representante" required placeholder="04121234567" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;"></div>
+                        <div><label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Correo Electrónico (Acceso) *</label><input type="email" name="email_representante" required placeholder="correo@domain.com" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;"></div>
+                    </div>
+                </fieldset>
+
+                <fieldset style="border: 1px solid #ddd; padding: 0.8rem; border-radius: 6px;">
+                    <legend style="font-weight: bold; font-size: 0.85rem; color: #1e3c72;">Selección Académica</legend>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin-top: 0.4rem;">
+                        <div>
+                            <label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Instrumento Principal *</label>
+                            <select name="instrumento" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; background:#fff;">
+                                <option value="">Seleccione instrumento...</option>
+                                <option value="CUATRO">CUATRO</option>
+                                <option value="GUITARRA">GUITARRA</option>
+                                <option value="PERCUSION (BATERIA)">PERCUSIÓN (BATERÍA)</option>
+                                <option value="TECLADO">TECLADO</option>
+                                <option value="BAJO ELECTRICO">BAJO ELÉCTRICO</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; display:block; margin-bottom:2px;">Nivel *</label>
+                            <select name="nivel" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; background:#fff;">
+                                <option value="INFANTIL">INFANTIL</option>
+                                <option value="INFANTIL I">INFANTIL I</option>
+                                <option value="JUVENIL">JUVENIL</option>
+                                <option value="JUVENIL I">JUVENIL I</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.75rem; color: #666; margin-top: 0.4rem;">ℹ️ Las cátedras complementarias (Coro, Lenguaje y Ensayo) se asignan automáticamente.</p>
+                </fieldset>
+
+                <button type="submit" style="background: #2a9d8f; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 0.95rem; cursor: pointer; margin-top: 0.2rem;">Guardar y Acceder al Portal</button>
             </form>
         </div>
 
@@ -65,8 +129,17 @@
 
     <script>
         function mostrarInputRepresentante() {
-            const box = document.getElementById('boxRepresentante');
-            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+            const boxRep = document.getElementById('boxRepresentante');
+            const boxReg = document.getElementById('boxRegistro');
+            boxReg.style.display = 'none';
+            boxRep.style.display = boxRep.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function mostrarFormRegistro() {
+            const boxReg = document.getElementById('boxRegistro');
+            const boxRep = document.getElementById('boxRepresentante');
+            boxRep.style.display = 'none';
+            boxReg.style.display = boxReg.style.display === 'none' ? 'block' : 'none';
         }
     </script>
 </body>

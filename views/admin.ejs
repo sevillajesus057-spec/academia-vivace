@@ -70,7 +70,7 @@
                 </form>
             </div>
 
-            <!-- SECCIÓN NUEVA: CONTROL DE CIERRE Y AUTORIZACIÓN DE BOLETINES -->
+       <!-- SECCIÓN NUEVA: CONTROL DE CIERRE Y AUTORIZACIÓN DE BOLETINES -->
             <div style="background: #fdf4ff; border: 2px dashed var(--vivace-purple, #7b2cbf); padding: 1.2rem; border-radius: 12px; margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div style="text-align: left;">
                     <h3 style="color: var(--vivace-purple, #7b2cbf); font-size: 1.1rem; margin-bottom: 0.2rem;">🎓 Autorización de Boletines Informativos</h3>
@@ -78,7 +78,7 @@
                 </div>
                 <form action="/admin/toggle-boletin" method="POST">
                     <% const boletinActivo = typeof boletinAutorizado !== 'undefined' && boletinAutorizado; %>
-                    <button type="submit" style="background: <%= boletinActivo ? '#27ae60' : '#e67e22' %>; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.95rem;">
+                    <button type="submit" style="background: <%= boletinActivo ? '#27ae60' : '#e67e22' %>; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                         <%= boletinActivo ? '🟢 Boletines Autorizados (Clic para Desactivar)' : '🔒 Boletines Bloqueados (Clic para Autorizar)' %>
                     </button>
                 </form>
@@ -113,7 +113,7 @@
             </div>
         </div>
 
-        <!-- MÓDULO 1: REGISTRO DE ESTUDIANTES (CON SELECCIÓN MÚLTIPLE DE INSTRUMENTOS) -->
+        <!-- MÓDULO 1: REGISTRO DE ESTUDIANTES -->
         <div id="seccion-registro" class="seccion-admin">
             <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
             <h2 style="color: var(--vivace-purple, #7b2cbf); margin-bottom: 1rem;">Ficha Completa de Inscripción</h2>
@@ -184,7 +184,6 @@
                     </div>
                 </fieldset>
 
-                <!-- Opción de Exonerar Pagos al Registrar -->
                 <div style="background: #fdf2f8; padding: 12px 16px; border-radius: 8px; border: 1px solid #fbcfe8; display: flex; align-items: center; gap: 12px;">
                     <input type="checkbox" name="exonerado" value="1" id="checkRegistroExonerado" style="width: 20px; height: 20px; cursor: pointer;">
                     <label for="checkRegistroExonerado" style="cursor: pointer; font-weight: bold; color: #db2777; font-size: 0.95rem;">
@@ -192,11 +191,11 @@
                     </label>
                 </div>
 
-                <button type="submit" class="btn-submit-green">Guardar e Inscribir Alumno</button>
+                <button type="submit" class="btn-submit-green" style="padding: 12px; background: #10b981; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer;">Guardar e Inscribir Alumno</button>
             </form>
         </div>
 
-        <!-- MÓDULO 2: NÓMINA DE ESTUDIANTES CON BUSCADOR EN VIVO Y EDICIÓN/ELIMINACIÓN -->
+        <!-- MÓDULO 2: NÓMINA DE ESTUDIANTES -->
         <div id="seccion-nomina-alumnos" class="seccion-admin">
             <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
             <h2 style="color: var(--vivace-purple, #7b2cbf); margin-bottom: 0.5rem;">Nómina General de Estudiantes</h2>
@@ -228,7 +227,7 @@
             <div style="overflow-x: auto;">
                 <table class="table-custom" id="tablaEstudiantesAdmin">
                     <thead>
-                        <tr><th>Estudiante</th><th>Cátedra</th><th>Representante y Contacto</th><th>Estatus</th><th>Acciones (Editar / WhatsApp Manual / Expediente)</th></tr>
+                        <tr><th>Estudiante</th><th>Cátedra</th><th>Representante y Contacto</th><th>Estatus</th><th>Acciones</th></tr>
                     </thead>
                     <tbody>
                         <% if (typeof estudiantes !== 'undefined' && estudiantes && estudiantes.length > 0) { %>
@@ -265,7 +264,6 @@
                                     </td>
                                     <td>
                                         <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;">
-                                            <!-- Formulario para editar datos clave del estudiante / representante -->
                                             <form action="/admin/editar-estudiante" method="POST" style="display: inline-flex; gap: 4px; background: #f8f9fa; padding: 4px; border-radius: 6px; border: 1px solid #ddd; align-items: center;">
                                                 <input type="hidden" name="id_estudiante" value="<%= est.id %>">
                                                 <input type="text" name="nombre_estudiante" value="<%= est.nombre_estudiante %>" style="width: 105px; font-size: 0.75rem; padding: 3px;" required title="Nombre Alumno">
@@ -278,16 +276,11 @@
                                                 <button type="submit" style="background: #0077b6; color: white; border: none; padding: 3px 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;" title="Guardar cambios">💾</button>
                                             </form>
 
-                                            <!-- Botón WhatsApp Manual -->
-                                            <a href="https://wa.me/<%= String(est.telefono_representante || '').replace(/\D/g, '').startsWith('58') ? String(est.telefono_representante || '').replace(/\D/g, '') : '58' + String(est.telefono_representante || '').replace(/\D/g, '') %>?text=<%= encodeURIComponent(textoWp) %>" 
-                                               target="_blank" 
-                                               style="background: #25d366; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.78rem;" 
-                                               title="Enviar por WhatsApp Manual">💬 WhatsApp</a>
+                                            <a href="https://wa.me/<%= String(est.telefono_representante || '').replace(/\D/g, '').startsWith('58') ? String(est.telefono_representante || '').replace(/\D/g, '') : '58' + String(est.telefono_representante || '').replace(/\D/g, '') %>?text=<%= encodeURIComponent(textoWp) %>" target="_blank" style="background: #25d366; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.78rem;" title="Enviar por WhatsApp Manual">💬 WhatsApp</a>
 
-                                            <button onclick="verExpedienteModal('<%= est.id %>')" style="background: #7b2cbf; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.78rem;" title="Ver Expediente">📋</button>
+                                            <button type="button" onclick="verExpedienteModal('<%= est.id %>')" style="background: #7b2cbf; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.78rem;" title="Ver Expediente">📋</button>
                                             <a href="/carnet/<%= est.codigo_qr %>" target="_blank" style="background: #27ae60; color: white; text-decoration: none; padding: 5px 8px; border-radius: 4px; font-weight: bold; font-size: 0.78rem;" title="Ver Carnet">🪪</a>
 
-                                            <!-- Botón para Eliminar Estudiante -->
                                             <form action="/admin/eliminar-estudiante" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Está seguro de eliminar a este estudiante del sistema? Se borrarán sus datos y cobros asociados.');">
                                                 <input type="hidden" name="id_estudiante" value="<%= est.id %>">
                                                 <button type="submit" style="background: #e63946; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.78rem; cursor: pointer;" title="Eliminar estudiante">🗑️</button>
@@ -303,13 +296,12 @@
                 </table>
             </div>
 
-            <!-- FORMULARIO DE REGISTRO DE PAGO / TASA HISTÓRICA CON MONTO EXACTO INGRESADO -->
+            <!-- FORMULARIO DE REGISTRO DE PAGO HISTÓRICO -->
             <div style="background: #f8f9fa; border: 1px solid #cbd5e1; padding: 1.5rem; border-radius: 12px; margin-top: 2rem;">
                 <h3 style="color: #1e3c72; margin-bottom: 0.5rem;">⚙️ Registrar Pago / Liquidar Deuda con Tasa e Ingreso Manual Exacto</h3>
-                <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">El monto ingresado en bolívares/dólares se reflejará exactamente en la contabilidad según el comprobante, sin recalcularse con la tasa del día actual.</p>
+                <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">El monto ingresado en bolívares/dólares se reflejará exactamente en la contabilidad según el comprobante.</p>
 
                 <form action="/admin/registrar-pago-historico" method="POST" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    
                     <div class="form-group" style="margin-bottom: 0;">
                         <label style="font-size: 0.82rem; font-weight: bold;">Seleccionar Estudiante *</label>
                         <select name="id_estudiante" id="selectEstudianteHistorico" onchange="cargarDeudasEstudiante()" required style="padding: 8px; border: 1px solid #ccc; border-radius: 6px; width: 100%;">
@@ -372,7 +364,6 @@
                 <a href="/admin/exportar-libro-compras" style="background: #1d6f42; color: white; padding: 10px 18px; text-decoration: none; border-radius: 6px; font-weight: bold;">📊 Exportar Libro SENIAT (.csv)</a>
             </div>
 
-            <!-- TARJETAS DE INDICADORES FINANCIEROS Y FISCALES -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                 <div style="background: #e8f8f5; border-left: 5px solid #27ae60; padding: 1rem; border-radius: 8px;">
                     <h4 style="color: #27ae60; margin:0; font-size: 0.85rem;">💰 Ingresos Totales</h4>
@@ -386,27 +377,22 @@
                     <h4 style="color: #0077b6; margin:0; font-size: 0.85rem;">👥 Egresos de Nómina</h4>
                     <p style="font-size: 1.2rem; font-weight: bold; margin: 5px 0;"><%= Number(typeof totalNominaPagadaVES !== 'undefined' ? totalNominaPagadaVES : 0).toFixed(2) %> Bs.</p>
                 </div>
-                <div style="background: #ebf5fb; border-left: 5px solid #2980b9; padding: 1rem; border-radius: 8px;" title="El servicio educativo es exento, por lo tanto no genera impuesto a cobrar a los clientes.">
+                <div style="background: #ebf5fb; border-left: 5px solid #2980b9; padding: 1rem; border-radius: 8px;">
                     <h4 style="color: #2980b9; margin:0; font-size: 0.85rem;">📄 IVA Débito</h4>
                     <p style="font-size: 1.1rem; font-weight: bold; margin: 5px 0;">0.00 Bs. <span style="font-size:0.7rem; color:#666;">(Exento)</span></p>
                 </div>
-                <div style="background: #fef9e7; border-left: 5px solid #f1c40f; padding: 1rem; border-radius: 8px;" title="Crédito fiscal acumulado por el IVA pagado en tus compras con factura legal.">
+                <div style="background: #fef9e7; border-left: 5px solid #f1c40f; padding: 1rem; border-radius: 8px;">
                     <h4 style="color: #b7950b; margin:0; font-size: 0.85rem;">📥 IVA Crédito</h4>
                     <p style="font-size: 1.2rem; font-weight: bold; margin: 5px 0;"><%= Number(typeof totalIvaCreditoVES !== 'undefined' ? totalIvaCreditoVES : 0).toFixed(2) %> Bs.</p>
                 </div>
-                <div style="background: #fce7f3; border-left: 5px solid #db2777; padding: 1rem; border-radius: 8px;" title="Impuesto final a declarar. Al ser la academia un instituto educativo exento, el IVA de tus compras se convierte en un crédito a favor o excedente para el siguiente mes.">
+                <div style="background: #fce7f3; border-left: 5px solid #db2777; padding: 1rem; border-radius: 8px;">
                     <h4 style="color: #be185d; margin:0; font-size: 0.85rem;">🏛️ IVA a Declarar</h4>
                     <p style="font-size: 1.1rem; font-weight: bold; margin: 5px 0;">0.00 Bs. <span style="font-size:0.7rem; color:#db2777;">(Excedente)</span></p>
                 </div>
             </div>
 
-            <!-- FORMULARIO DE REGISTRO DE COMPRA CON GUÍA Y FECHA -->
             <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 10px; border: 1px solid #ddd;">
                 <h3 style="color: var(--vivace-purple, #7b2cbf); margin-bottom: 0.3rem;">+ Registrar Egreso / Compra para Libro SENIAT</h3>
-                <p style="font-size: 0.85rem; color: #555; margin-bottom: 1rem;">
-                    💡 <em>Guía rápida:</em> Si la compra tiene <strong>Factura con IVA (16%)</strong>, selecciona esa opción y coloca el <strong>Monto Total</strong> exacto que indica la factura; el sistema calculará automáticamente la Base y el IVA desglosado. Si es sin factura o exento, colócalo como exento.
-                </p>
-
                 <form action="/admin/agregar-egreso" method="POST">
                     <div class="form-grid">
                         <div class="form-group"><label>Proveedor *</label><input type="text" name="proveedor" required placeholder="Ej: Librería o Sup."></div>
@@ -465,11 +451,11 @@
             </div>
         </div>
 
-        <!-- MÓDULO 4: CONCILIACIÓN BANCARIA Y FACTURACIÓN -->
+<!-- MÓDULO 4: CONCILIACIÓN BANCARIA -->
         <div id="seccion-conciliacion" class="seccion-admin">
             <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
             <h2 style="color: var(--vivace-purple, #7b2cbf); margin-bottom: 0.5rem;">Conciliación de Pagos Móviles y Facturación</h2>
-            <p style="color: #666; font-size: 0.9rem; margin-bottom: 1.5rem;">Verifica el pago reportado, emite tu factura fiscal y coloca el número correspondiente antes de aprobar.</p>
+            <p style="color: #666; font-size: 0.9rem; margin-bottom: 1.5rem;">Verifica el pago reportado (incluyendo pagos múltiples agrupados), emite tu factura fiscal y coloca el número correspondiente antes de aprobar.</p>
             
             <div style="overflow-x: auto;">
                 <% if (typeof cobrosPorRevisar !== 'undefined' && cobrosPorRevisar && cobrosPorRevisar.length > 0) { %>
@@ -477,36 +463,37 @@
                         <thead>
                             <tr>
                                 <th>Estudiante</th>
-                                <th>Concepto</th>
-                                <th>Monto</th>
+                                <th>Concepto(s)</th>
+                                <th>Monto Total</th>
                                 <th>Ref. / Comprobante</th>
                                 <th>Acción y Facturación</th>
                             </tr>
                         </thead>
                         <tbody>
                             <% cobrosPorRevisar.forEach(c => { 
-                                const montoUsdC = Number(c.monto_usd || 0);
+                                const montoUsdC = Number(c.total_usd || 0);
                                 const montoBsC = montoUsdC * Number(typeof tasaBCV !== 'undefined' ? tasaBCV : 814.69);
-                                const textoWpConciliacion = `Hola *${c.nombre_representante}*, le escribimos de la *Academia de Música Vivace* para confirmarle que el pago por concepto de *${c.concepto}* ($${montoUsdC.toFixed(2)} / ${montoBsC.toFixed(2)} Bs.) ha sido verificado y validado exitosamente. ¡Muchas gracias por su apoyo!`;
+                                const conceptoTexto = c.concepto_unido || c.concepto || 'Pago General';
+                                const textoWpConciliacion = `Hola *${c.nombre_representante}*, le escribimos de la *Academia de Música Vivace* para confirmarle que el pago por concepto de *${conceptoTexto}* ($${montoUsdC.toFixed(2)} / ${montoBsC.toFixed(2)} Bs.) ha sido verificado y validado exitosamente. ¡Muchas gracias por su apoyo!`;
                             %>
                                 <tr>
                                     <td><strong><%= c.nombre_estudiante %></strong><br><small><%= c.nombre_representante %></small></td>
-                                    <td><%= c.concepto %></td>
-                                    <td>$<%= c.monto_usd %></td>
+                                    <td><span style="color: #7b2cbf; font-weight: bold;"><%= conceptoTexto %></span></td>
+                                    <td>
+                                        <strong>$<%= montoUsdC.toFixed(2) %> USD</strong><br>
+                                        <span style="font-size: 0.85rem; color: #555;">Bs. <%= montoBsC.toFixed(2) %></span>
+                                    </td>
                                     <td><span style="background: #fff3cd; padding: 4px; font-weight: bold;"><%= c.comprobante %></span></td>
                                     <td>
                                         <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                                            <!-- WhatsApp Manual -->
-                                            <a href="https://wa.me/<%= String(c.telefono_representante || '').replace(/\D/g, '').startsWith('58') ? String(c.telefono_representante || '').replace(/\D/g, '') : '58' + String(c.telefono_representante || '').replace(/\D/g, '') %>?text=<%= encodeURIComponent(textoWpConciliacion) %>" 
-                                               target="_blank" 
-                                               style="background: #25d366; color: white; padding: 6px 10px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.78rem;" 
-                                               title="Agradecer por WhatsApp">💬 WhatsApp</a>
+                                            <a href="https://wa.me/<%= String(c.telefono_representante || '').replace(/\D/g, '').startsWith('58') ? String(c.telefono_representante || '').replace(/\D/g, '') : '58' + String(c.telefono_representante || '').replace(/\D/g, '') %>?text=<%= encodeURIComponent(textoWpConciliacion) %>" target="_blank" style="background: #25d366; color: white; padding: 6px 10px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.78rem;" title="Agradecer por WhatsApp">💬 WhatsApp</a>
 
-                                            <!-- Formulario con input de N° de Factura -->
-                                            <form action="/admin/conciliar-pago" method="POST" style="display: inline-flex; gap: 4px; align-items: center; background: #f8f9fa; padding: 4px; border-radius: 6px; border: 1px solid #ddd;">
-                                                <input type="hidden" name="id_cobro" value="<%= c.id %>">
+                                            <!-- Formulario unificado para aprobar el pago múltiple o individual con 1 sola factura -->
+                                            <form action="/admin/conciliar-pago-multiple" method="POST" style="display: inline-flex; gap: 4px; align-items: center; background: #f8f9fa; padding: 4px; border-radius: 6px; border: 1px solid #ddd;">
+                                                <input type="hidden" name="id_estudiante" value="<%= c.id_estudiante %>">
+                                                <input type="hidden" name="comprobante" value="<%= c.comprobante %>">
                                                 <input type="hidden" name="accion" value="aprobar">
-                                                <input type="text" name="numero_factura_emitida" placeholder="N° Factura" required style="width: 90px; font-size: 0.75rem; padding: 4px; border: 1px solid #ccc; border-radius: 4px;" title="Ingrese el N° de factura emitida">
+                                                <input type="text" name="numero_factura_emitida" placeholder="N° Factura" required style="width: 90px; font-size: 0.75rem; padding: 4px; border: 1px solid #ccc; border-radius: 4px;" title="Ingrese el N° de factura única emitida">
                                                 <button type="submit" style="background: #27ae60; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.78rem;">Validar</button>
                                             </form>
                                         </div>
@@ -520,8 +507,7 @@
                 <% } %>
             </div>
         </div>
-
-        <!-- MÓDULO 5: NÓMINA DE PERSONAL (CON SELECCIÓN MÚLTIPLE DE CARGOS/CÁTEDRAS) -->
+        <!-- MÓDULO 5: NÓMINA DE PERSONAL -->
         <div id="seccion-personal" class="seccion-admin">
             <button class="btn-volver" onclick="volverInicio()">⬅ Menú Principal</button>
             <h2 style="color: var(--vivace-purple, #7b2cbf); margin-bottom: 0.5rem;">Nómina de Profesores y Personal (<%= typeof nombreMesActual !== 'undefined' ? nombreMesActual : '' %>)</h2>
@@ -658,9 +644,7 @@
                                     <tr>
                                         <td><%= asig.fecha %></td>
                                         <td><%= asig.catedra %></td>
-                                        <td>
-                                            <strong><%= asig.nombre_estudiante %></strong> 
-                                        </td>
+                                        <td><strong><%= asig.nombre_estudiante %></strong></td>
                                         <td><%= asig.estado %></td>
                                         <td>
                                             <form action="/admin/modificar-asistencia" method="POST" style="display: flex; gap: 0.4rem;">
@@ -694,9 +678,7 @@
                                     <tr>
                                         <td><%= cal.periodo %></td>
                                         <td><%= cal.catedra %> - <%= cal.objetivo %></td>
-                                        <td>
-                                            <strong><%= cal.nombre_estudiante %></strong> 
-                                        </td>
+                                        <td><strong><%= cal.nombre_estudiante %></strong></td>
                                         <td><%= cal.calificacion %></td>
                                         <td>
                                             <form action="/admin/modificar-calificacion" method="POST" style="display: flex; gap: 0.4rem; align-items: center;">
@@ -793,7 +775,7 @@
     <script id="datos-personal" type="application/json"><%- JSON.stringify(typeof personal !== 'undefined' && personal ? personal : []) %></script>
 
     <script>
-        const tasaBCV = Number('<%= typeof tasaBCV !== 'undefined' ? tasaBCV : 814.69 %>');
+        const tasaBCV = Number("<%= typeof tasaBCV !== 'undefined' ? tasaBCV : 814.69 %>") || 814.69;
         let listaEstudiantes = [], listaPersonal = [], docenteSeleccionado = null;
 
         try {
@@ -914,20 +896,18 @@
             document.getElementById('modalCedulaEstudiante').innerText = est.cedula_estudiante || 'No indicada';
             document.getElementById('modalInstrumentoEstudiante').innerText = est.instrumento || 'N/A';
             document.getElementById('modalGrupoEstudiante').innerText = est.nivel || 'N/A';
-            
             const qrContenedor = document.getElementById('modalQrContenedor');
             const urlCarnet = '/carnet/' + est.codigo_qr;
             document.getElementById('modalLinkCarnet').href = urlCarnet;
-            qrContenedor.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${window.location.origin}${urlCarnet}" alt="Código QR" style="border: 1px solid #ccc; padding: 4px; background: white; border-radius: 4px;">`;
-
+            qrContenedor.innerHTML = ``;
             const tbody = document.getElementById('modalTablaCobros');
             tbody.innerHTML = '';
             if (est.cobrosHistorial && est.cobrosHistorial.length > 0) {
                 est.cobrosHistorial.forEach(c => {
-                    tbody.innerHTML += `<tr><td><strong>${c.concepto}</strong></td><td>$${c.monto_usd}</td><td><span style="color:${c.estatus === 'Pagado' ? '#27ae60' : '#c0392b'}; font-weight:bold;">${c.estatus}</span></td></tr>`;
+                    tbody.innerHTML += `<tr><td>${c.concepto}</td><td>$${Number(c.monto_usd).toFixed(2)}</td><td>${c.estatus}</td></tr>`;
                 });
             } else {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Sin cobros.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3">Sin cobros registrados.</td></tr>';
             }
             document.getElementById('modalExpediente').style.display = 'flex';
         }
@@ -946,7 +926,7 @@
 
             const tbody = document.getElementById('tablaPagosDocenteBody');
             tbody.innerHTML = '';
-            if (docenteSeleccionado.historialPagos && docenteSeleccionado.historialPagos.length >0) {
+            if (docenteSeleccionado.historialPagos && docenteSeleccionado.historialPagos.length > 0) {
                 docenteSeleccionado.historialPagos.forEach(h => {
                     tbody.innerHTML += `<tr><td><strong>${h.tipo_pago}</strong></td><td style="color:#27ae60; font-weight:bold;">${Number(h.monto_ves).toFixed(2)} Bs.</td><td><small>${h.referencia}</small></td><td><small>${String(h.fecha_pago).substring(0,10)}</small></td></tr>`;
                 });

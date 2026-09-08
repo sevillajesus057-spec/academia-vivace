@@ -35,8 +35,8 @@
         .student-rep { color: #777; font-size: 0.82rem; margin-top: 2px; }
 
         .table-custom { width: 100%; border-collapse: collapse; margin-top: 0.8rem; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-        .table-custom th { background: #1e3c72; color: white; text-align: left; padding: 10px 12px; font-size: 0.82rem; }
-        .table-custom td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 0.82rem; }
+        .table-custom th { background: #1e3c72; color: white; text-align: left; padding: 12px 14px; font-size: 0.85rem; }
+        .table-custom td { padding: 12px 14px; border-bottom: 1px solid #eee; font-size: 0.85rem; vertical-align: middle; }
         .table-responsive { overflow-x: auto; margin-bottom: 1.5rem; }
 
         .badge-solvente { display: inline-block; background: #d4edda; color: #155724; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border: 1px solid #c3e6cb; }
@@ -49,8 +49,7 @@
         .status-pagado { color: #27ae60; font-weight: bold; }
         .status-revision { color: #f39c12; font-weight: bold; }
         .status-pendiente { color: #c0392b; font-weight: bold; }
-        .form-reportar { display: flex; gap: 6px; align-items: center; }
-        .input-ref { padding: 5px 8px; font-size: 0.8rem; border: 1px solid #ccc; border-radius: 4px; width: 130px; }
+        .input-ref { padding: 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 6px; width: 200px; }
 
         .solsitos-banner { background: #fffdf4; border: 2px dashed #f39c12; padding: 1rem 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; }
         .solsitos-title { color: #d35400; font-size: 1rem; margin-bottom: 0.2rem; }
@@ -136,54 +135,97 @@
                         <% } %>
                     </div>
 
-                    <h3 class="section-title">💳 Estado de Cuenta y Mensualidades</h3>
-                    <div class="table-responsive">
-                        <table class="table-custom">
-                            <thead>
-                                <tr>
-                                    <th>Concepto</th>
-                                    <th>Monto ($)</th>
-                                    <th>Período</th>
-                                    <th>Estatus</th>
-                                    <th>Acción / Reporte</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if (est.cobrosHistorial && est.cobrosHistorial.length > 0) { %>
-                                    <% est.cobrosHistorial.forEach(cobro => { %>
-                                        <tr>
-                                            <td><strong><%= cobro.concepto %></strong></td>
-                                            <td>$<%= Number(cobro.monto_usd || 0).toFixed(2) %></td>
-                                            <td><%= cobro.mes_anio %></td>
-                                            <td>
-                                                <% if (cobro.estatus === 'Pagado') { %>
-                                                    <span class="status-pagado">Pagado</span>
-                                                <% } else if (cobro.estatus === 'Revision') { %>
-                                                    <span class="status-revision">En Revisión</span>
-                                                <% } else { %>
-                                                    <span class="status-pendiente">Pendiente</span>
-                                                <% } %>
-                                            </td>
-                                            <td>
-                                                <% if (cobro.estatus === 'Pendiente' || cobro.estatus === 'Rechazado') { %>
-                                                    <form action="/representante/reportar-pago" method="POST" class="form-reportar">
-                                                        <input type="hidden" name="id_cobro" value="<%= cobro.id %>">
-                                                        <input type="hidden" name="id_estudiante" value="<%= est.id %>">
-                                                        <input type="text" name="comprobante" placeholder="N° Ref. Pago Móvil" required class="input-ref">
-                                                        <button type="submit" class="btn-action">Reportar</button>
-                                                    </form>
-                                                <% } else { %>
-                                                    <small class="text-muted">Ref: <%= cobro.comprobante || 'N/A' %></small>
-                                                <% } %>
-                                            </td>
-                                        </tr>
-                                    <% }); %>
-                                <% } else { %>
-                                    <tr><td colspan="5" class="text-center">No hay cobros registrados.</td></tr>
-                                <% } %>
-                            </tbody>
-                        </table>
+                    <!-- CUADRO INFORMATIVO DE PAGO MÓVIL Y TASA -->
+                    <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 1.8rem; border-radius: 14px; margin-bottom: 1.8rem; box-shadow: 0 8px 25px rgba(30,60,114,0.25); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+                        <div style="flex: 1; min-width: 260px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <span style="font-size: 1.4rem;">📲</span>
+                                <h3 style="font-size: 1.2rem; font-weight: bold; letter-spacing: 0.5px; color: #fff;">DATOS OFICIALES PARA PAGO MÓVIL</h3>
+                            </div>
+                            <p style="font-size: 0.95rem; margin: 4px 0; opacity: 0.95;"><strong>Banco:</strong> Banco Nacional de Crédito (BNC)</p>
+                            <p style="font-size: 1.15rem; margin: 6px 0; font-weight: bold; letter-spacing: 1px; color: #ffd700;"><strong>Teléfono:</strong> 0422-1445395</p>
+                            <p style="font-size: 0.95rem; margin: 4px 0; opacity: 0.95;"><strong>RIF:</strong> J-508106830 | <strong>Titular:</strong> Emprendimiento Jesus Sevilla</p>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(5px); padding: 1rem 1.4rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.2); text-align: center; min-width: 160px;">
+                            <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; display: block; opacity: 0.85; margin-bottom: 2px;">Tasa BCV Oficial</span>
+                            <strong style="font-size: 1.4rem; color: #fff;">Bs. <%= typeof tasaBCV !== 'undefined' ? tasaBCV.toFixed(2) : '814.69' %></strong>
+                        </div>
                     </div>
+
+                    <h3 class="section-title">💳 Estado de Cuenta y Mensualidades</h3>
+                    
+                    <!-- FORMULARIO UNICO CON MULTIPLE SELECCION -->
+                    <form action="/representante/reportar-pago-multiple" method="POST">
+                        <input type="hidden" name="id_estudiante" value="<%= est.id %>">
+                        
+                        <div class="table-responsive">
+                            <table class="table-custom">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px; text-align: center;">Elegir</th>
+                                        <th>Concepto</th>
+                                        <th>Monto a Pagar</th>
+                                        <th>Período</th>
+                                        <th>Estatus</th>
+                                        <th>Referencia / Nota</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (est.cobrosHistorial && est.cobrosHistorial.length > 0) { %>
+                                        <% est.cobrosHistorial.forEach(cobro => { %>
+                                            <% const montoUsd = Number(cobro.monto_usd || 0); %>
+                                            <% const montoBs = (montoUsd * (typeof tasaBCV !== 'undefined' ? tasaBCV : 814.69)).toFixed(2); %>
+                                            <tr>
+                                                <td style="text-align: center;">
+                                                    <% if (cobro.estatus === 'Pendiente' || cobro.estatus === 'Rechazado') { %>
+                                                        <input type="checkbox" name="cobros_seleccionados" value="<%= cobro.id %>" data-usd="<%= montoUsd %>" data-bs="<%= montoBs %>" onchange="calcularTotalSeleccionado('<%= est.id %>')" style="width: 20px; height: 20px; cursor: pointer;">
+                                                    <% } else { %>
+                                                        -
+                                                    <% } %>
+                                                </td>
+                                                <td><strong><%= cobro.concepto %></strong></td>
+                                                <td>
+                                                    <div style="font-size: 0.9rem; color: #555;">$<%= montoUsd.toFixed(2) %> USD</div>
+                                                    <div style="font-size: 1.1rem; font-weight: bold; color: #1e3c72; margin-top: 2px;">Bs. <%= montoBs %></div>
+                                                </td>
+                                                <td><%= cobro.mes_anio %></td>
+                                                <td>
+                                                    <% if (cobro.estatus === 'Pagado') { %>
+                                                        <span class="status-pagado">Pagado</span>
+                                                    <% } else if (cobro.estatus === 'Revision') { %>
+                                                        <span class="status-revision">En Revisión</span>
+                                                    <% } else { %>
+                                                        <span class="status-pendiente">Pendiente</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (cobro.estatus !== 'Pendiente' && cobro.estatus !== 'Rechazado') { %>
+                                                        <small class="text-muted">Ref: <%= cobro.comprobante || 'N/A' %></small>
+                                                    <% } else { %>
+                                                        <span class="text-muted" style="font-size: 0.8rem;">Seleccione para pagar unido</span>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr><td colspan="6" class="text-center">No hay cobros registrados.</td></tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- PANEL FLOTANTE DE TOTAL Y ENVIO MULTIPLE -->
+                        <div id="panel-pago-multiple-<%= est.id %>" style="display: none; background: #faf5ff; border: 2px solid #7b2cbf; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 15px rgba(123,44,191,0.15);">
+                            <div>
+                                <h4 style="color: #7b2cbf; margin-bottom: 4px; font-size: 1.05rem;">🧾 Total Acumulado Seleccionado</h4>
+                                <p style="font-size: 1.25rem; font-weight: bold; color: #1e3c72;" id="texto-total-<%= est.id %>">$0.00 USD (Bs. 0.00)</p>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                <input type="text" name="comprobante" placeholder="N° Ref. Pago Móvil" required class="input-ref">
+                                <button type="submit" style="background: #27ae60; color: white; border: none; padding: 11px 22px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(39,174,96,0.2);">🚀 Reportar Pago Único</button>
+                            </div>
+                        </div>
+                    </form>
 
                     <% if (est.solvente) { %>
                         
@@ -211,7 +253,7 @@
                         </div>
 
                         <% est.catedrasAlumno.forEach((cat, cIndex) => { %>
-                            <div id="cat-content-<%= est.id %>-<%= cat %>" class="cat-tab-content-<%= est.id %> cat-content-box" style="display: <% if (cIndex === 0) { %>block<% } else { %>none<% } %>;">
+                            <div id="cat-content-<%= est.id %>-<%= cat %>" class="cat-content-box" style="display: <% if (cIndex === 0) { %>block<% } else { %>none<% } %>;">
                                 
                                 <% 
                                     const infoAsis = est.resumenAsistenciaPorCatedra[cat] || { presente: 0, total: 0 };
@@ -284,15 +326,38 @@
         }
 
         function cambiarCatTab(estId, catedraNombre, evt) {
-            document.querySelectorAll('.cat-tab-content-' + estId).forEach(el => el.style.display = 'none');
+            const contenedorEstudiante = document.getElementById('student-content-' + estId);
+            contenedorEstudiante.querySelectorAll('.cat-content-box').forEach(el => el.style.display = 'none');
+            
             const botones = evt.currentTarget.parentElement.querySelectorAll('button');
             botones.forEach(btn => {
                 btn.classList.remove('activo');
                 btn.classList.add('inactivo');
             });
+            
             document.getElementById('cat-content-' + estId + '-' + catedraNombre).style.display = 'block';
             evt.currentTarget.classList.remove('inactivo');
             evt.currentTarget.classList.add('activo');
+        }
+
+        function calcularTotalSeleccionado(estId) {
+            const contenedor = document.getElementById('student-content-' + estId);
+            const checkboxes = contenedor.querySelectorAll('input[name="cobros_seleccionados"]:checked');
+            const panel = document.getElementById('panel-pago-multiple-' + estId);
+            const textoTotal = document.getElementById('texto-total-' + estId);
+
+            if (checkboxes.length > 0) {
+                let sumaUsd = 0;
+                let sumaBs = 0;
+                checkboxes.forEach(cb => {
+                    sumaUsd += parseFloat(cb.getAttribute('data-usd') || 0);
+                    sumaBs += parseFloat(cb.getAttribute('data-bs') || 0);
+                });
+                textoTotal.innerText = `$${sumaUsd.toFixed(2)} USD (Bs. ${sumaBs.toFixed(2)})`;
+                panel.style.display = 'flex';
+            } else {
+                panel.style.display = 'none';
+            }
         }
     </script>
 </body>

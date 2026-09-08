@@ -139,10 +139,108 @@ app.post('/representante/login', (req, res) => {
     });
 });
 
-app.post('/representante/reportar-pago', (req, res) => {
-    const { id_cobro, comprobante, id_estudiante } = req.body;
-    db.run(`UPDATE cobros SET estatus = 'Revision', comprobante = ? WHERE id = ?`, [comprobante, id_cobro], function(err) {
-        res.redirect('/representante/portal/' + id_estudiante);
+app.post('/representante/registrar', (req, res) => {
+    const nombre = (req.body.nombre_estudiante || '').trim();
+    const cedulaEst = (req.body.cedula_estudiante || '').trim();
+    const fechaNac = req.body.fecha_nacimiento || null;
+    const edad = req.body.edad ? parseInt(req.body.edad) : null;
+    const tipoSangre = (req.body.tipo_sangre || '').trim();
+    
+    const rep = (req.body.nombre_representante || '').trim();
+    const cedulaRep = (req.body.cedula_representante || '').trim();
+    const telfRep = (req.body.telefono_representante || '').trim();
+    const correo = (req.body.email_representante || '').trim();
+    
+    const instrumento = req.body.instrumento || 'CUATRO';
+    const nivel = req.body.nivel || 'INFANTIL';
+
+    if (!nombre || !rep || !telfRep || !correo || !instrumento) {
+        return res.status(400).send("Faltan campos obligatorios para completar el registro.");
+    }
+
+    const codigo_qr = 'vivace-' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+
+    const query = `INSERT INTO estudiantes (
+        nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, 
+        nombre_representante, cedula_representante, telefono_representante, email_representante, 
+        instrumento, nivel, codigo_qr, exonerado
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`;
+
+    db.run(query, [
+        nombre, cedulaEst, fechaNac, edad, tipoSangre,
+        rep, cedulaRep, telfRep, correo,
+        instrumento, nivel, codigo_qr
+    ], function(err) {
+        if (err) {
+            console.error("❌ Error al autoregistrar estudiante:", err.message);
+            return res.status(500).send("Error al guardar el registro: " + err.message);
+        }
+
+        const nuevoId = this.lastID;
+        
+        // Obtenemos dinámicamente el mes y año actual de inscripción (Ej: '2026-12' para Diciembre 2026)
+        const mesAnioInscripcion = getMesAnioActual(); 
+        
+        // Traducimos el mes actual a su nombre legible (Ej: 'Diciembre 2026')
+        const nombreMesInscripcion = getNombreMesActual();
+
+        // 1. Generar Inscripción por $5.00 para el mes en curso
+        db.run(`INSERT INTO cobros (id_estudiante, concepto, monto_usd, mes_anio, estatus) VALUES (?, ?, 5.00, ?, 'Pendiente')`, 
+        [nuevoId, 'Inscripción del Año Escolar', mesAnioInscripcion], () => {
+            
+            // 2. Generar la Mensualidad exactamente del mes de inscripción (ej. Diciembre) y no de septiembre
+            db.run(`INSERT INTO cobros (id_estudiante, concepto, monto_usd, mes_anio, estatus) VALUES (?, ?, 10.00, ?, 'Pendiente')`, 
+            [nuevoId, `Mensualidad ${nombreMesInscripcion}`, mesAnioInscripcion], () => {
+                
+                // 3. Notificar al personal y profesores
+                const mensajeNotif = `Nuevo estudiante registrado: ${nombre} (${instrumento} - ${nivel}) por el representante ${rep}.`;
+                db.run(`INSERT INTO solsitos (estudiante_key, id_personal, cantidad, motivo, periodo) VALUES (?, 1, 0, ?, ?)`, 
+                [generarEstudianteKey(nombre, correo), mensajeNotif, nombreMesInscripcion], () => {
+                    
+                    console.log("✔ ¡Estudiante registrado en mes actual, cobros generados y notificado! ID:", nuevoId);
+                    res.redirect('/representante/portal/' + nuevoId);
+                });
+            });
+        });
+    });
+});
+
+// Reportar Pago Múltiple (Unificado)
+app.post('/representante/reportar-pago-multiple', (req, res) => {
+    const idEstudiante = req.body.id_estudiante;
+    let cobrosSeleccionados = req.body.cobros_seleccionados;
+    const comprobante = (req.body.comprobante || '').trim();
+
+    if (!cobrosSeleccionados || !comprobante) {
+        return res.status(400).send("Error: Debe seleccionar al menos un concepto y colocar el número de referencia del pago móvil.");
+    }
+
+    if (!Array.isArray(cobrosSeleccionados)) {
+        cobrosSeleccionados = [cobrosSeleccionados];
+    }
+
+    let completados = 0;
+    let errorOcurrido = false;
+
+    cobrosSeleccionados.forEach(idCobro => {
+        db.run(
+            `UPDATE cobros SET estatus = 'Revision', comprobante = ? WHERE id = ? AND id_estudiante = ?`,
+            [comprobante, idCobro, idEstudiante],
+            (err) => {
+                if (err) {
+                    console.error("❌ Error al actualizar cobro múltiple:", err.message);
+                    errorOcurrido = true;
+                }
+                completados++;
+
+                if (completados === cobrosSeleccionados.length) {
+                    if (errorOcurrido) {
+                        return res.status(500).send("Ocurrió un error al procesar el reporte múltiple en la base de datos.");
+                    }
+                    res.redirect('/representante/portal/' + idEstudiante);
+                }
+            }
+        );
     });
 });
 
@@ -556,15 +654,32 @@ app.get('/admin', requerirAuthAdmin, (req, res) => {
                     const totalEgresosUSDCalc = egresos.reduce((acc, e) => acc + (e.monto_usd || 0), 0);
                     const saldoCajaUSD = Math.max(0, totalIngresosUSD - totalEgresosUSDCalc);
 
-                    const cobrosPorRevisar = cobros.filter(c => c.estatus === 'Revision').map(c => {
-                        const est = estudiantes.find(e => e.id === c.id_estudiante);
-                        return { 
-                            ...c, 
-                            nombre_estudiante: est ? est.nombre_estudiante : 'Desconocido', 
-                            nombre_representante: est ? est.nombre_representante : 'N/A',
-                            telefono_representante: est ? est.telefono_representante : ''
-                        };
+                   // Agrupamos los pagos en revisión por comprobante y estudiante para los pagos múltiples
+                    const mapaCobrosRevision = {};
+                    cobros.filter(c => c.estatus === 'Revision').forEach(c => {
+                        const clave = `${c.id_estudiante}_${(c.comprobante || 'S/N').trim()}`;
+                        if (!mapaCobrosRevision[clave]) {
+                            const est = estudiantes.find(e => e.id === c.id_estudiante);
+                            mapaCobrosRevision[clave] = {
+                                id_estudiante: c.id_estudiante,
+                                comprobante: c.comprobante,
+                                ids_cobros: [],
+                                conceptos: [],
+                                total_usd: 0,
+                                nombre_estudiante: est ? est.nombre_estudiante : 'Desconocido',
+                                nombre_representante: est ? est.nombre_representante : 'N/A',
+                                telefono_representante: est ? est.telefono_representante : ''
+                            };
+                        }
+                        mapaCobrosRevision[clave].ids_cobros.push(c.id);
+                        mapaCobrosRevision[clave].conceptos.push(c.concepto);
+                        mapaCobrosRevision[clave].total_usd += (c.monto_usd || 0);
                     });
+
+                    const cobrosPorRevisar = Object.values(mapaCobrosRevision).map(item => ({
+                        ...item,
+                        concepto_unido: item.conceptos.join(' + ')
+                    }));
 
                     db.all(`SELECT * FROM personal`, [], (err, personalList) => {
                         if (err || !personalList) personalList = [];
@@ -662,50 +777,65 @@ app.post('/admin/modificar-calificacion', requerirAuthAdmin, (req, res) => {
         res.redirect('/admin');
     });
 });
-
 app.post('/admin/agregar-estudiante', requerirAuthAdmin, (req, res) => {
-    const { nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto, direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumentos_multiples, instrumento: instrumentoUnico, nivel, observaciones_medicas, exonerado } = req.body;
+    const nombre = (req.body.nombre_estudiante || '').trim();
+    const cedulaEstudiante = (req.body.cedula_estudiante || '').trim();
+    const fechaNacimiento = req.body.fecha_nacimiento || null;
+    const edad = req.body.edad ? parseInt(req.body.edad) : null;
+    const tipoSangre = (req.body.tipo_sangre || '').trim();
+    const direccion = (req.body.direccion || '').trim();
+    const foto = (req.body.foto || '/img/logo_vivace.png').trim();
     
-    let instrumentoFinal = instrumentoUnico || '';
-    if (instrumentos_multiples) {
-        if (Array.isArray(instrumentos_multiples)) {
-            instrumentoFinal = instrumentos_multiples.join(', ');
+    const rep = (req.body.nombre_representante || '').trim();
+    const cedulaRep = (req.body.cedula_representante || '').trim();
+    const telefonoRep = (req.body.telefono_representante || '').trim();
+    const parentesco = (req.body.parentesco || '').trim();
+    const correo = (req.body.email_representante || '').trim();
+    
+    const nivel = (req.body.nivel || '').trim() || 'INFANTIL';
+    const obsMedicas = (req.body.observaciones_medicas || '').trim();
+    const exoneradoVal = req.body.exonerado ? 1 : 0;
+
+    if (!nombre || !rep || !correo) {
+        console.error("❌ Error: Faltan campos obligatorios para el estudiante.");
+        return res.status(400).send("Error: El nombre del estudiante, el representante y el correo son obligatorios.");
+    }
+
+    let instrumentosSeleccionados = req.body.instrumentos_multiples;
+    let instrumentoFinal = 'GENERAL';
+    
+    if (instrumentosSeleccionados) {
+        if (Array.isArray(instrumentosSeleccionados)) {
+            instrumentoFinal = instrumentosSeleccionados.join(', ');
         } else {
-            instrumentoFinal = instrumentos_multiples;
+            instrumentoFinal = String(instrumentosSeleccionados);
         }
     }
 
-    const codigo_qr = 'VIVACE-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-    const mesAnio = getMesAnioActual();
-    const nombreMes = getNombreMesActual();
-    const esExonerado = exonerado ? 1 : 0;
+    const codigo_qr = 'vivace-' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
 
-    db.run(`INSERT INTO estudiantes (nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto, direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumento, nivel, observaciones_medicas, codigo_qr, exonerado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-    [nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, foto || '', direccion, nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante, instrumentoFinal, nivel, observaciones_medicas, codigo_qr, esExonerado], function(err) {
-        if (err) {
-            console.error("Error al insertar estudiante:", err.message);
-            return res.redirect('/admin');
+    db.run(
+        `INSERT INTO estudiantes (
+            nombre_estudiante, cedula_estudiante, fecha_nacimiento, edad, tipo_sangre, direccion, foto,
+            nombre_representante, cedula_representante, telefono_representante, parentesco, email_representante,
+            instrumento, nivel, observaciones_medicas, codigo_qr, exonerado
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+            nombre, cedulaEstudiante, fechaNacimiento, edad, tipoSangre, direccion, foto,
+            rep, cedulaRep, telefonoRep, parentesco, correo,
+            instrumentoFinal, nivel, obsMedicas, codigo_qr, exoneradoVal
+        ],
+        function(err) {
+            if (err) {
+                console.error("❌ ERROR SQLITE EN TURSO:", err.message);
+                return res.status(500).send("Error de base de datos en Turso: " + err.message);
+            }
+            console.log("✔ ¡Estudiante registrado con éxito en Turso! ID:", this.lastID);
+            res.redirect('/admin');
         }
-        if (esExonerado) return res.redirect('/admin');
-        
-        const idEst = this.lastID;
-        db.run(`INSERT INTO cobros (id_estudiante, concepto, monto_usd, mes_anio, estatus) VALUES (?, 'Inscripción Matrícula Inicial', 5.00, ?, 'Pendiente')`, [idEst, mesAnio], () => {
-            db.run(`INSERT INTO cobros (id_estudiante, concepto, monto_usd, mes_anio, estatus) VALUES (?, ?, 10.00, ?, 'Pendiente')`, [idEst, `Mensualidad ${nombreMes}`, mesAnio], () => {
-                res.redirect('/admin');
-            });
-        });
-    });
+    );
 });
 
-app.post('/admin/editar-estudiante', requerirAuthAdmin, (req, res) => {
-    const { id_estudiante, nombre_estudiante, telefono_representante, email_representante, instrumento, nivel, exonerado } = req.body;
-    const esExonerado = exonerado ? 1 : 0;
-
-    db.run(`UPDATE estudiantes SET nombre_estudiante = ?, telefono_representante = ?, email_representante = ?, instrumento = ?, nivel = ?, exonerado = ? WHERE id = ?`, 
-    [nombre_estudiante, telefono_representante, email_representante, instrumento, nivel, esExonerado, id_estudiante], () => {
-        res.redirect('/admin');
-    });
-});
 
 app.post('/admin/eliminar-estudiante', requerirAuthAdmin, (req, res) => {
     const { id_estudiante } = req.body;
@@ -779,6 +909,33 @@ app.get('/admin/exportar-libro-compras', requerirAuthAdmin, (req, res) => {
 });
 
 app.post('/admin/conciliar-pago', requerirAuthAdmin, (req, res) => {
+    app.post('/admin/conciliar-pago-multiple', requerirAuthAdmin, (req, res) => {
+    const { id_estudiante, comprobante, accion, numero_factura_emitida } = req.body;
+    const nuevoEstatus = accion === 'aprobar' ? 'Pagado' : 'Rechazado';
+    const nroFactura = numero_factura_emitida || 'S/N';
+
+    if (!id_estudiante || !comprobante) {
+        return res.redirect('/admin');
+    }
+
+    // Buscamos y actualizamos todos los cobros que compartan este comprobante y este estudiante
+    db.all(`SELECT * FROM cobros WHERE id_estudiante = ? AND comprobante = ? AND estatus = 'Revision'`, [id_estudiante, comprobante], (err, rows) => {
+        if (err || !rows || rows.length === 0) {
+            return res.redirect('/admin');
+        }
+
+        let completados = 0;
+        rows.forEach(cobro => {
+            const nuevoComp = `${comprobante} | Factura N°: ${nroFactura}`;
+            db.run(`UPDATE cobros SET estatus = ?, comprobante = ? WHERE id = ?`, [nuevoEstatus, nuevoComp, cobro.id], () => {
+                completados++;
+                if (completados === rows.length) {
+                    res.redirect('/admin');
+                }
+            });
+        });
+    });
+});
     const { id_cobro, accion, numero_factura_emitida } = req.body;
     const nuevoEstatus = accion === 'aprobar' ? 'Pagado' : 'Rechazado';
     const nroFactura = numero_factura_emitida || 'S/N';
@@ -847,7 +1004,33 @@ app.get('/', (req, res) => {
     }
     res.redirect('/admin/login');
 });
+// Ruta para aprobar pagos múltiples agrupados en el admin con una sola factura
+app.post('/admin/conciliar-pago-multiple', requerirAuthAdmin, (req, res) => {
+    const { id_estudiante, comprobante, accion, numero_factura_emitida } = req.body;
+    const nuevoEstatus = accion === 'aprobar' ? 'Pagado' : 'Rechazado';
+    const nroFactura = numero_factura_emitida || 'S/N';
 
+    if (!id_estudiante || !comprobante) {
+        return res.redirect('/admin');
+    }
+
+    db.all(`SELECT * FROM cobros WHERE id_estudiante = ? AND comprobante = ? AND estatus = 'Revision'`, [id_estudiante, comprobante], (err, rows) => {
+        if (err || !rows || rows.length === 0) {
+            return res.redirect('/admin');
+        }
+
+        let completados = 0;
+        rows.forEach(cobro => {
+            const nuevoComp = `${comprobante} | Factura N°: ${nroFactura}`;
+            db.run(`UPDATE cobros SET estatus = ?, comprobante = ? WHERE id = ?`, [nuevoEstatus, nuevoComp, cobro.id], () => {
+                completados++;
+                if (completados === rows.length) {
+                    res.redirect('/admin');
+                }
+            });
+        });
+    });
+});
 app.listen(PORT, () => {
     console.log(`Servidor en marcha en http://localhost:${PORT}`);
 });

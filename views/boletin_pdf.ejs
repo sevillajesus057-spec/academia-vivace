@@ -2,94 +2,295 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boletín Académico - <%= estudiante.nombre_estudiante %></title>
+    <title>Boleta de Rendimiento - <%= estudiante.nombre_estudiante %></title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background: #fff; padding: 1.5rem; }
-        .boletin-container { max-width: 800px; margin: 0 auto; border: 2px solid #1e3c72; padding: 1.5rem; border-radius: 12px; }
-        
-        /* Encabezado compacto y pegado arriba */
-        .header-boletin { text-align: center; border-bottom: 2px solid #1e3c72; padding-bottom: 0.6rem; margin-bottom: 0.8rem; }
-        .logo { max-width: 90px; height: auto; margin-bottom: 0.1rem; }
-        .academy-name { color: #1e3c72; font-size: 1.3rem; font-weight: bold; line-height: 1.1; }
-        .academy-subtitle { color: #666; font-size: 0.8rem; margin-top: 1px; }
-        .boletin-titulo { color: #333; font-size: 1.1rem; font-weight: bold; margin-top: 0.3rem; letter-spacing: 0.5px; }
-        
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; background: #f8f9fa; padding: 0.7rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; }
-        .info-grid p { margin-bottom: 0.2rem; }
-        
-        .section-title { color: #1e3c72; font-size: 1rem; margin-bottom: 0.4rem; border-left: 4px solid #1e3c72; padding-left: 6px; margin-top: 1rem; }
-        
-        .table-custom { width: 100%; border-collapse: collapse; margin-bottom: 0.8rem; }
-        .table-custom th { background: #1e3c72; color: white; text-align: left; padding: 6px 8px; font-size: 0.8rem; }
-        .table-custom td { padding: 6px 8px; border-bottom: 1px solid #ddd; font-size: 0.8rem; }
-        
-        /* Bloque de firma centrado */
-        .footer-boletin { margin-top: 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .firma-imagen { max-width: 150px; height: auto; margin-bottom: -12px; position: relative; z-index: 2; }
-        .firma-linea { width: 260px; border-top: 1px solid #333; margin-top: 4px; padding-top: 4px; }
-        .firma-texto { font-size: 0.82rem; color: #333; line-height: 1.2; }
-        
+        :root {
+            --vivace-purple: #7b2cbf;
+            --vivace-dark: #2d1b4e;
+            --vivace-light: #fdf4ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f5f7;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .boletin-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(123, 44, 191, 0.1);
+            border-top: 8px solid var(--vivace-purple);
+        }
+
+        .header-boletin {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-area img {
+            width: 70px;
+            height: auto;
+        }
+
+        .logo-text h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--vivace-dark);
+            font-weight: 800;
+        }
+
+        .logo-text p {
+            margin: 2px 0 0;
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .titulo-boleta {
+            text-align: right;
+        }
+
+        .titulo-boleta h2 {
+            margin: 0;
+            color: var(--vivace-purple);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .titulo-boleta span {
+            font-size: 0.85rem;
+            background: var(--vivace-light);
+            color: var(--vivace-purple);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            background: var(--vivace-light);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #f3e8ff;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .info-item span {
+            font-size: 1rem;
+            color: var(--vivace-dark);
+            font-weight: 700;
+        }
+
+        .categoria-bloque {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .categoria-titulo {
+            background: var(--vivace-purple);
+            color: white;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 8px 8px 0 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            text-align: left;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        th {
+            background: #f9fafb;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .col-indicador {
+            width: 80%;
+        }
+
+        .col-escala {
+            width: 20%;
+            text-align: center;
+            font-weight: bold;
+            color: var(--vivace-purple);
+        }
+
+        /* RESUMEN DE ASISTENCIA */
+        .asistencia-container {
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .observaciones-box {
+            background: #fffbeb;
+            border-left: 5px solid #f59e0b;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 25px;
+            margin-bottom: 40px;
+        }
+
+        .observaciones-box h4 {
+            margin: 0 0 8px 0;
+            color: #b45309;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+        }
+
+        .observaciones-box p {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #78350f;
+            text-align: justify;
+        }
+
+        /* FIRMA ÚNICA CENTRADA */
+        .firma-centro {
+            text-align: center;
+            margin-top: 50px;
+            page-break-inside: avoid;
+        }
+
+        .firma-linea {
+            width: 300px;
+            margin: 0 auto;
+            border-top: 2px solid #333;
+            padding-top: 8px;
+        }
+
+        .firma-linea span {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--vivace-dark);
+        }
+
+        .firma-linea small {
+            font-size: 0.78rem;
+            color: #666;
+        }
+
+        .no-print {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+            z-index: 1000;
+        }
+
         @media print {
-            body { padding: 0; background: none; }
-            .boletin-container { border: none; padding: 0; }
+            body { background: white; padding: 0; }
+            .boletin-container { box-shadow: none; border: none; padding: 0; }
             .no-print { display: none; }
         }
     </style>
 </head>
 <body>
 
+    <button class="no-print" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+
     <div class="boletin-container">
-        
-        <!-- ENCABEZADO COMPACTO -->
+        <!-- ENCABEZADO -->
         <div class="header-boletin">
-            <img src="/img/logo_vivace.png" alt="Logo Academia Vivace" class="logo">
-            <div class="academy-name">Academia de Música Vivace</div>
-            <div class="academy-subtitle">RIF: J-50810683-0 | Puerto La Cruz, Anzoátegui</div>
-            <div class="boletin-titulo">BOLETÍN INFORMATIVO ACADÉMICO</div>
+            <div class="logo-area">
+                <img src="/img/logo_vivace.png" alt="Logo Vivace" onerror="this.src='https://i.ibb.co/3s64n2p/logo-vivace.png'">
+                <div class="logo-text">
+                    <h1>Academia Vivace</h1>
+                    <p>J-50810683-0</p>
+                </div>
+            </div>
+            <div class="titulo-boleta">
+                <h2>Boleta de Rendimiento</h2>
+                <span>Año Escolar: 2026-2027</span>
+            </div>
         </div>
 
         <!-- DATOS DEL ESTUDIANTE -->
         <div class="info-grid">
-            <div>
-                <p><strong>Estudiante:</strong> <%= estudiante.nombre_estudiante %></p>
-                <p><strong>Cédula / Identidad:</strong> <%= estudiante.cedula_estudiante || 'N/A' %></p>
-                <p><strong>Cátedra / Instrumento:</strong> <%= estudiante.instrumento %></p>
-                <p><strong>Nivel:</strong> <%= estudiante.nivel %></p>
+            <div class="info-item">
+                <label>Apellidos y Nombres del Estudiante</label>
+                <span><%= estudiante.nombre_estudiante %></span>
             </div>
-            <div>
-                <p><strong>Representante:</strong> <%= estudiante.nombre_representante %></p>
-                <p><strong>Teléfono:</strong> <%= estudiante.telefono_representante %></p>
-                <p><strong>Correo:</strong> <%= estudiante.email_representante %></p>
-                <p><strong>Fecha de Emisión:</strong> <%= new Date().toLocaleDateString('es-VE') %></p>
+            <div class="info-item">
+                <label>Instrumento</label>
+                <span><%= estudiante.instrumento || 'General' %></span>
+            </div>
+            <div class="info-item">
+                <label>Grupo / Nivel</label>
+                <span><%= estudiante.nivel || 'Infantil' %></span>
             </div>
         </div>
 
-        <!-- CALIFICACIONES AGRUPADAS POR CÁTEDRA -->
-        <h3 class="section-title">📝 Calificaciones y Evaluaciones</h3>
+        <!-- CALIFICACIONES Y INDICADORES -->
         <% if (estudiante.calificacionesAgrupadas && Object.keys(estudiante.calificacionesAgrupadas).length > 0) { %>
             <% Object.keys(estudiante.calificacionesAgrupadas).forEach(catedra => { %>
-                <div style="margin-bottom: 0.8rem;">
-                    <h4 style="color: #7b2cbf; font-size: 0.88rem; margin-bottom: 0.3rem; background: #faf5ff; padding: 4px 8px; border-radius: 4px;">Cátedra: <%= catedra %></h4>
-                    <table class="table-custom">
+                <div class="categoria-bloque">
+                    <div class="categoria-titulo">🎼 <%= catedra %></div>
+                    <table>
                         <thead>
                             <tr>
-                                <th>Período</th>
-                                <th>Objetivo</th>
-                                <th>Indicador</th>
-                                <th>Nota</th>
-                                <th>Observación</th>
+                                <th class="col-indicador">Indicador / Criterio de Evaluación</th>
+                                <th class="col-escala">Calificación</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% estudiante.calificacionesAgrupadas[catedra].forEach(c => { %>
+                            <% estudiante.calificacionesAgrupadas[catedra].forEach(item => { %>
                                 <tr>
-                                    <td><%= c.periodo %></td>
-                                    <td><strong><%= c.objetivo %></strong></td>
-                                    <td><%= c.indicador %></td>
-                                    <td style="color: #27ae60; font-weight: bold;"><%= c.calificacion %></td>
-                                    <td><%= c.observacion || 'N/A' %></td>
+                                    <td><%= item.indicador || item.objetivo || 'Evaluación general' %></td>
+                                    <td class="col-escala"><%= item.calificacion || 'E' %></td>
                                 </tr>
                             <% }); %>
                         </tbody>
@@ -97,52 +298,59 @@
                 </div>
             <% }); %>
         <% } else { %>
-            <p style="font-size: 0.85rem; color: #777; font-style: italic; margin-bottom: 1rem;">No se registran calificaciones cargadas en el sistema para este período.</p>
+            <p style="text-align: center; color: #666; padding: 2rem;">No hay calificaciones registradas para este periodo.</p>
         <% } %>
 
-        <!-- ASISTENCIA CONSOLIDADA POR MATERIA -->
-        <h3 class="section-title">📅 Registro de Asistencia a Clases</h3>
+        <!-- ASISTENCIA -->
         <% if (estudiante.asistenciaResumen && estudiante.asistenciaResumen.length > 0) { %>
-            <table class="table-custom">
-                <thead>
-                    <tr>
-                        <th>Cátedra / Materia</th>
-                        <th>Total Clases Programadas</th>
-                        <th>Asistencias Presentes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% estudiante.asistenciaResumen.forEach(asig => { %>
+            <div class="asistencia-container">
+                <div class="categoria-titulo">📅 Resumen de Asistencia por Cátedra</div>
+                <table>
+                    <thead>
                         <tr>
-                            <td><strong><%= asig.catedra %></strong></td>
-                            <td><%= asig.totalClases %> clases</td>
-                            <td style="color: #27ae60; font-weight: bold;"><%= asig.totalPresentes %> asistencias</td>
+                            <th class="col-indicador">Cátedra</th>
+                            <th class="col-escala">Clases Asistidas / Total</th>
                         </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-        <% } else { %>
-            <p style="font-size: 0.85rem; color: #777; font-style: italic; margin-bottom: 1rem;">No se registran asistencias cargadas en el sistema.</p>
+                    </thead>
+                    <tbody>
+                        <% estudiante.asistenciaResumen.forEach(asist => { %>
+                            <tr>
+                                <td><%= asist.catedra %></td>
+                                <td class="col-escala"><%= asist.totalPresentes %> / <%= asist.totalClases %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
         <% } %>
 
-        <!-- FIRMA DEL DIRECTOR CENTRADA -->
-        <div class="footer-boletin">
-            <img src="/img/firma.png" alt="Firma Director" class="firma-imagen" onerror="this.style.display='none'">
-            <div class="firma-linea"></div>
-            <div class="firma-texto">
-                <strong>Dirección</strong><br>
-                <strong>Prof. Jesús Sevilla</strong><br>
-                Director de la Academia de Música Vivace
+        <!-- OBSERVACIONES -->
+        <div class="observaciones-box">
+            <h4>Observaciones del Rendimiento Académico</h4>
+            <p>
+                <% 
+                   let obsTexto = '';
+                   if (estudiante.calificacionesAgrupadas) {
+                       Object.keys(estudiante.calificacionesAgrupadas).forEach(cat => {
+                           estudiante.calificacionesAgrupadas[cat].forEach(item => {
+                               if (item.observacion && item.observacion.trim() !== '') {
+                                   obsTexto += item.observacion + ' ';
+                               }
+                           });
+                       });
+                   }
+                %>
+                <%= obsTexto.trim() !== '' ? obsTexto : (estudiante.observaciones_medicas || 'Estudiante destacado por su excelente compromiso, evolución artística y notable entusiasmo en cada una de sus cátedras musicales.') %>
+            </p>
+        </div>
+
+        <!-- FIRMA ÚNICA -->
+        <div class="firma-centro">
+            <div class="firma-linea">
+                <span>Prof. Jesús D. Sevilla</span>
+                <small>Dirección General - Academia Vivace</small>
             </div>
         </div>
-
-        <!-- BOTÓN DE IMPRESIÓN (Oculto al imprimir) -->
-        <div class="no-print" style="text-align: center; margin-top: 1.5rem;">
-            <button onclick="window.print()" style="background: #1e3c72; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem;">
-                🖨 Imprimir / Guardar como PDF
-            </button>
-        </div>
-
     </div>
 
 </body>
