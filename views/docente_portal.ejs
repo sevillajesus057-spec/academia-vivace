@@ -128,18 +128,16 @@
                             <label>Fecha de la Clase *</label>
                             <input type="date" name="fecha" id="inputFechaAsistencia" required>
                         </div>
-                        <% if (docente.cargo.toLowerCase().includes('coro') || docente.cargo.toLowerCase().includes('lenguaje')) { %>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>Filtrar por Nivel / Grupo</label>
-                                <select id="filtroNivelAsistencia" onchange="filtrarAlumnosAsistencia()">
-                                    <option value="todos">Todos los niveles</option>
-                                    <option value="Infantil">Infantil</option>
-                                    <option value="Infantil I">Infantil I</option>
-                                    <option value="Juvenil">Juvenil</option>
-                                    <option value="Juvenil I">Juvenil I</option>
-                                </select>
-                            </div>
-                        <% } %>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Filtrar por Nivel / Grupo</label>
+                            <select id="filtroNivelAsistencia" onchange="filtrarAlumnosAsistencia()">
+                                <option value="todos">Todos los niveles</option>
+                                <option value="Infantil">Infantil</option>
+                                <option value="Infantil I">Infantil I</option>
+                                <option value="Juvenil">Juvenil</option>
+                                <option value="Juvenil I">Juvenil I</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div style="overflow-x: auto; max-height: 420px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 1.5rem;">
@@ -234,18 +232,16 @@
                                 <option value="Objetivo N° 8">Objetivo N° 8</option>
                             </select>
                         </div>
-                        <% if (docente.cargo.toLowerCase().includes('coro') || docente.cargo.toLowerCase().includes('lenguaje')) { %>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>Filtrar por Nivel / Grupo</label>
-                                <select id="filtroNivelNotas" onchange="filtrarAlumnosNotas()">
-                                    <option value="todos">Todos los niveles</option>
-                                    <option value="Infantil">Infantil</option>
-                                    <option value="Infantil I">Infantil I</option>
-                                    <option value="Juvenil">Juvenil</option>
-                                    <option value="Juvenil I">Juvenil I</option>
-                                </select>
-                            </div>
-                        <% } %>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Filtrar por Nivel / Grupo</label>
+                            <select id="filtroNivelNotas" onchange="filtrarAlumnosNotas()">
+                                <option value="todos">Todos los niveles</option>
+                                <option value="Infantil">Infantil</option>
+                                <option value="Infantil I">Infantil I</option>
+                                <option value="Juvenil">Juvenil</option>
+                                <option value="Juvenil I">Juvenil I</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -402,14 +398,19 @@
         function filtrarAlumnosAsistencia() {
             const select = document.getElementById('filtroNivelAsistencia');
             if (!select) return;
-            const nivelSeleccionado = select.value.trim().toLowerCase();
+            const filtro = select.value.trim().toLowerCase();
             const filas = document.querySelectorAll('.fila-estudiante-asis');
+            
             filas.forEach(fila => {
                 const nivelEstudiante = (fila.getAttribute('data-nivel') || '').trim().toLowerCase();
-                if (nivelSeleccionado === 'todos' || nivelEstudiante === nivelSeleccionado) {
+                const selectEstado = fila.querySelector('select');
+
+                if (filtro === 'todos' || nivelEstudiante.includes(filtro)) {
                     fila.style.display = '';
+                    if (selectEstado) selectEstado.disabled = false;
                 } else {
                     fila.style.display = 'none';
+                    if (selectEstado) selectEstado.disabled = true;
                 }
             });
         }
@@ -417,14 +418,19 @@
         function filtrarAlumnosNotas() {
             const select = document.getElementById('filtroNivelNotas');
             if (!select) return;
-            const nivelSeleccionado = select.value.trim().toLowerCase();
+            const filtro = select.value.trim().toLowerCase();
             const filas = document.querySelectorAll('.fila-estudiante-nota');
+            
             filas.forEach(fila => {
                 const nivelEstudiante = (fila.getAttribute('data-nivel') || '').trim().toLowerCase();
-                if (nivelSeleccionado === 'todos' || nivelEstudiante === nivelSeleccionado) {
+                const inputs = fila.querySelectorAll('input');
+
+                if (filtro === 'todos' || nivelEstudiante.includes(filtro)) {
                     fila.style.display = '';
+                    inputs.forEach(input => input.disabled = false);
                 } else {
                     fila.style.display = 'none';
+                    inputs.forEach(input => input.disabled = true);
                 }
             });
         }

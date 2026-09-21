@@ -42,9 +42,6 @@
         .badge-solvente { display: inline-block; background: #d4edda; color: #155724; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border: 1px solid #c3e6cb; }
         .badge-moroso { display: inline-block; background: #f8d7da; color: #721c24; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border: 1px solid #f5c6cb; }
         
-        .btn-action { background: #2980b9; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
-        .btn-action:hover { opacity: 0.9; }
-
         .section-title { color: #1e3c72; font-size: 1.1rem; margin-bottom: 0.6rem; margin-top: 1.2rem; }
         .status-pagado { color: #27ae60; font-weight: bold; }
         .status-revision { color: #f39c12; font-weight: bold; }
@@ -73,6 +70,9 @@
         .text-center { text-align: center; }
         .text-muted { color: #888; }
         .text-italic { color: #777; font-size: 0.82rem; font-style: italic; padding: 0.4rem 0; }
+
+        .panel-pago-flotante { display: none; background: #faf5ff; border: 2px solid #7b2cbf; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 15px rgba(123,44,191,0.15); }
+        .banco-card-box { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 1.8rem; border-radius: 14px; margin-bottom: 1.8rem; box-shadow: 0 8px 25px rgba(30,60,114,0.25); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
     </style>
 </head>
 <body>
@@ -109,6 +109,19 @@
                             <p class="student-rep">Representante: <%= est.nombre_representante %> (<%= est.email_representante %>)</p>
                         </div>
                         <div>
+                            <!-- Botón / Acceso al Carnet con QR -->
+    <div style="margin: 1rem 0; background: #f0f4f8; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #d9e2ec;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.5rem;">🪪</span>
+            <div>
+                <strong style="font-size: 0.9rem; color: #1e3c72; display: block;">Carnet Digital de Estudiante</strong>
+                <span style="font-size: 0.78rem; color: #666;">Incluye código QR de identificación para asistencia</span>
+            </div>
+        </div>
+        <a href="/carnet/<%= est.codigo_qr %>" target="_blank" style="background: #1e3c72; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.85rem;">
+            Ver Carnet y QR ↗
+        </a>
+    </div>
                             <% if (est.solvente) { %>
                                 <span class="badge-solvente">✔ Solvente / Al Día</span>
                             <% } else { %>
@@ -136,7 +149,7 @@
                     </div>
 
                     <!-- CUADRO INFORMATIVO DE PAGO MÓVIL Y TASA -->
-                    <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 1.8rem; border-radius: 14px; margin-bottom: 1.8rem; box-shadow: 0 8px 25px rgba(30,60,114,0.25); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+                    <div class="banco-card-box">
                         <div style="flex: 1; min-width: 260px;">
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                                 <span style="font-size: 1.4rem;">📲</span>
@@ -152,9 +165,9 @@
                         </div>
                     </div>
 
-                    <h3 class="section-title">💳 Estado de Cuenta y Mensualidades</h3>
+                    <h3 class="section-title">💳 Estado de Cuenta Familiar Unificado</h3>
                     
-                    <!-- FORMULARIO UNICO CON MULTIPLE SELECCION -->
+                    <!-- FORMULARIO UNIFICADO FAMILIAR CON MULTIPLE SELECCION Y ABONOS LIBRES -->
                     <form action="/representante/reportar-pago-multiple" method="POST">
                         <input type="hidden" name="id_estudiante" value="<%= est.id %>">
                         
@@ -163,6 +176,7 @@
                                 <thead>
                                     <tr>
                                         <th style="width: 50px; text-align: center;">Elegir</th>
+                                        <th>Estudiante / Hermano</th>
                                         <th>Concepto</th>
                                         <th>Monto a Pagar</th>
                                         <th>Período</th>
@@ -171,58 +185,69 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% if (est.cobrosHistorial && est.cobrosHistorial.length > 0) { %>
-                                        <% est.cobrosHistorial.forEach(cobro => { %>
-                                            <% const montoUsd = Number(cobro.monto_usd || 0); %>
-                                            <% const montoBs = (montoUsd * (typeof tasaBCV !== 'undefined' ? tasaBCV : 814.69)).toFixed(2); %>
-                                            <tr>
-                                                <td style="text-align: center;">
-                                                    <% if (cobro.estatus === 'Pendiente' || cobro.estatus === 'Rechazado') { %>
-                                                        <input type="checkbox" name="cobros_seleccionados" value="<%= cobro.id %>" data-usd="<%= montoUsd %>" data-bs="<%= montoBs %>" onchange="calcularTotalSeleccionado('<%= est.id %>')" style="width: 20px; height: 20px; cursor: pointer;">
-                                                    <% } else { %>
-                                                        -
-                                                    <% } %>
-                                                </td>
-                                                <td><strong><%= cobro.concepto %></strong></td>
-                                                <td>
-                                                    <div style="font-size: 0.9rem; color: #555;">$<%= montoUsd.toFixed(2) %> USD</div>
-                                                    <div style="font-size: 1.1rem; font-weight: bold; color: #1e3c72; margin-top: 2px;">Bs. <%= montoBs %></div>
-                                                </td>
-                                                <td><%= cobro.mes_anio %></td>
-                                                <td>
-                                                    <% if (cobro.estatus === 'Pagado') { %>
-                                                        <span class="status-pagado">Pagado</span>
-                                                    <% } else if (cobro.estatus === 'Revision') { %>
-                                                        <span class="status-revision">En Revisión</span>
-                                                    <% } else { %>
-                                                        <span class="status-pendiente">Pendiente</span>
-                                                    <% } %>
-                                                </td>
-                                                <td>
-                                                    <% if (cobro.estatus !== 'Pendiente' && cobro.estatus !== 'Rechazado') { %>
-                                                        <small class="text-muted">Ref: <%= cobro.comprobante || 'N/A' %></small>
-                                                    <% } else { %>
-                                                        <span class="text-muted" style="font-size: 0.8rem;">Seleccione para pagar unido</span>
-                                                    <% } %>
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                    <% } else { %>
-                                        <tr><td colspan="6" class="text-center">No hay cobros registrados.</td></tr>
+                                    <% 
+                                       let hayCobrosFamilia = false;
+                                       estudiantes.forEach(hermano => {
+                                           if (hermano.cobrosHistorial && hermano.cobrosHistorial.length > 0) {
+                                               hermano.cobrosHistorial.forEach(cobro => {
+                                                   hayCobrosFamilia = true;
+                                                   const montoUsd = Number(cobro.monto_usd || 0);
+                                                   const montoBs = (montoUsd * (typeof tasaBCV !== 'undefined' ? tasaBCV : 814.69)).toFixed(2);
+                                    %>
+                                        <tr>
+                                            <td style="text-align: center;">
+                                                <% if (cobro.estatus === 'Pendiente' || cobro.estatus === 'Rechazado') { %>
+                                                    <input type="checkbox" name="cobros_seleccionados" value="<%= cobro.id %>" data-usd="<%= montoUsd %>" data-bs="<%= montoBs %>" onchange="calcularTotalSeleccionado('<%= est.id %>')" style="width: 20px; height: 20px; cursor: pointer;">
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            </td>
+                                            <td><strong><%= hermano.nombre_estudiante %></strong></td>
+                                            <td><strong><%= cobro.concepto %></strong></td>
+                                            <td>
+                                                <div style="font-size: 0.9rem; color: #555;">$<%= montoUsd.toFixed(2) %> USD</div>
+                                                <div style="font-size: 1.1rem; font-weight: bold; color: #1e3c72; margin-top: 2px;">Bs. <%= montoBs %></div>
+                                            </td>
+                                            <td><%= cobro.mes_anio %></td>
+                                            <td>
+                                                <% if (cobro.estatus === 'Pagado') { %>
+                                                    <span class="status-pagado">Pagado</span>
+                                                <% } else if (cobro.estatus === 'Revision') { %>
+                                                    <span class="status-revision">En Revisión</span>
+                                                <% } else { %>
+                                                    <span class="status-pendiente">Pendiente</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (cobro.estatus !== 'Pendiente' && cobro.estatus !== 'Rechazado') { %>
+                                                    <small class="text-muted">Ref: <%= cobro.comprobante || 'N/A' %></small>
+                                                <% } else { %>
+                                                    <span class="text-muted" style="font-size: 0.8rem;">Seleccione para pago unificado</span>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% 
+                                               });
+                                           }
+                                       }); 
+                                    %>
+
+                                    <% if (!hayCobrosFamilia) { %>
+                                        <tr><td colspan="7" class="text-center">No hay cobros registrados para la familia.</td></tr>
                                     <% } %>
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- PANEL FLOTANTE DE TOTAL Y ENVIO MULTIPLE -->
-                        <div id="panel-pago-multiple-<%= est.id %>" style="display: none; background: #faf5ff; border: 2px solid #7b2cbf; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 15px rgba(123,44,191,0.15);">
+                        <!-- PANEL FLOTANTE DE TOTAL Y ABONO LIBRE FAMILIAR -->
+                        <div id="panel-pago-multiple-<%= est.id %>" class="panel-pago-flotante">
                             <div>
-                                <h4 style="color: #7b2cbf; margin-bottom: 4px; font-size: 1.05rem;">🧾 Total Acumulado Seleccionado</h4>
+                                <h4 style="color: #7b2cbf; margin-bottom: 4px; font-size: 1.05rem;">🧾 Total Acumulado Seleccionado / Abono</h4>
                                 <p style="font-size: 1.25rem; font-weight: bold; color: #1e3c72;" id="texto-total-<%= est.id %>">$0.00 USD (Bs. 0.00)</p>
                             </div>
                             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                                 <input type="text" name="comprobante" placeholder="N° Ref. Pago Móvil" required class="input-ref">
-                                <button type="submit" style="background: #27ae60; color: white; border: none; padding: 11px 22px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(39,174,96,0.2);">🚀 Reportar Pago Único</button>
+                                <button type="submit" style="background: #27ae60; color: white; border: none; padding: 11px 22px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 10px rgba(39,174,96,0.2);">🚀 Reportar Pago o Abono Familiar</button>
                             </div>
                         </div>
                     </form>

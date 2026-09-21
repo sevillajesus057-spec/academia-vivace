@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobante de Pago - Academia de Música Vivace</title>
+    <style>
+        :root {
+            --vivace-purple: #7b2cbf;
+            --vivace-magenta: #e0248c;
+            --vivace-blue: #0077b6;
+            --vivace-dark: #212529;
+            --vivace-light: #f8f9fa;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--vivace-dark); }
+        body { background: #e9ecef; padding: 30px; display: flex; justify-content: center; }
+        
+        .receipt-container { 
+            width: 100%; 
+            max-width: 800px; 
+            background: #fff; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            position: relative; 
+            border-top: 6px solid var(--vivace-purple); 
+        }
+        
+        /* Encabezado */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e9ecef; padding-bottom: 20px; margin-bottom: 25px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .academy-logo { max-width: 75px; height: auto; }
+        .header-left h2 { font-size: 1.25rem; font-weight: bold; color: var(--vivace-purple); text-transform: uppercase; letter-spacing: 0.5px; }
+        .header-left p { font-size: 0.8rem; line-height: 1.4; color: #666; margin-top: 2px; }
+        
+        .header-right { text-align: right; }
+        .receipt-badge { background: #f3e8ff; color: var(--vivace-purple); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
+        .header-right h3 { font-size: 0.95rem; color: var(--vivace-dark); font-weight: 600; }
+        .header-right p { font-size: 0.8rem; color: #555; margin-top: 2px; }
+
+        /* Datos del Representante */
+        .info-section { background: var(--vivace-light); border: 1px solid #dee2e6; border-radius: 8px; padding: 15px 20px; display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 25px; }
+        .info-col p { line-height: 1.6; color: #444; }
+        .info-col strong { color: var(--vivace-dark); }
+
+        /* Tabla de Alumnos */
+        .table-detalle { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 0.85rem; }
+        .table-detalle th, .table-detalle td { border-bottom: 1px solid #dee2e6; padding: 12px 10px; text-align: left; }
+        .table-detalle th { background: linear-gradient(135deg, var(--vivace-purple), var(--vivace-blue)); color: white; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; font-weight: 600; }
+        .table-detalle th:first-child { border-top-left-radius: 6px; }
+        .table-detalle th:last-child { border-top-right-radius: 6px; }
+        .text-right { text-align: right; }
+
+        /* Totales y Método */
+        .bottom-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; gap: 20px; }
+        .payment-notes { font-size: 0.8rem; color: #555; background: #fdf4ff; border: 1px solid #f5d0fe; padding: 12px; border-radius: 6px; width: 55%; line-height: 1.5; }
+        
+        .totals-box { width: 42%; font-size: 0.85rem; }
+        .totals-row { display: flex; justify-content: space-between; padding: 6px 0; color: #555; border-bottom: 1px dashed #dee2e6; }
+        .totals-row.final { font-weight: bold; color: var(--vivace-dark); border-top: 2px solid var(--vivace-purple); border-bottom: 2px solid var(--vivace-purple); margin-top: 8px; padding: 10px 0; font-size: 1rem; background: #faf5ff; }
+
+        /* Pie de página y Firmas */
+        .footer-info { font-size: 0.75rem; border-top: 1px solid #dee2e6; padding-top: 15px; margin-top: 20px; display: flex; justify-content: space-between; color: #666; align-items: flex-end; }
+        .signature-line { border-top: 1px solid #444; width: 200px; margin-top: 35px; text-align: center; padding-top: 4px; font-size: 0.75rem; font-weight: bold; color: #444; }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .receipt-container { border: none; box-shadow: none; padding: 10px; border-top: 4px solid var(--vivace-purple); }
+            .no-print { display: none; }
+        }
+        .btn-print { background: var(--vivace-purple); color: white; border: none; padding: 10px 22px; font-size: 0.95rem; cursor: pointer; border-radius: 6px; font-weight: bold; box-shadow: 0 4px 12px rgba(123,44,191,0.2); transition: background 0.2s; }
+        .btn-print:hover { background: #6519a6; }
+    </style>
+</head>
+<body>
+
+    <div style="width: 100%; max-width: 800px;">
+        <div style="text-align: right; margin-bottom: 15px;" class="no-print">
+            <button class="btn-print" onclick="window.print()">🖨️ Imprimir Recibo Elegante</button>
+        </div>
+
+        <div class="receipt-container">
+            <!-- ENCABEZADO INSTITUCIONAL CON LOGO -->
+            <div class="header">
+                <div class="header-left">
+                    <img src="/img/logo_vivace.png" alt="Logo Academia Vivace" class="academy-logo">
+                    <div>
+                        <h2>Academia de Música Vivace</h2>
+                        <p>Emprendimiento Jesús Sevilla &bull; RIF: J-50810683-0<br>
+                        Puerto La Cruz, Anzoátegui, Venezuela</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="receipt-badge">Comprobante Oficial</span>
+                    <h3>N° CONTROL: 01-<%= String(pago.id || 1).padStart(6, '0') %></h3>
+                    <p>Fecha: <%= String(pago.fecha || pago.fecha_pago || new Date().toISOString()).substring(0, 10) %></p>
+                </div>
+            </div>
+
+            <!-- DATOS DEL REPRESENTANTE / FAMILIA -->
+            <div class="info-section">
+                <div class="info-col">
+                    <p><strong>Representante:</strong> <%= representante.nombre %></p>
+                    <p><strong>Cédula:</strong> <%= representante.cedula %></p>
+                    <p><strong>Teléfono:</strong> <%= representante.telefono %></p>
+                </div>
+                <div class="info-col" style="text-align: right;">
+                    <p><strong>Correo:</strong> <%= representante.email %></p>
+                    <p><strong>Condición Fiscal:</strong> Servicios Educativos Exentos de IVA (Decreto Ley)</p>
+                    <p><strong>Período:</strong> Año Escolar 2026/2027</p>
+                </div>
+            </div>
+
+            <!-- DESGLOSE DE HERMANOS / ALUMNOS -->
+<table class="table-detalle">
+    <thead>
+        <tr>
+            <th>Alumno(s) / Hermano(s)</th>
+            <th>Cátedra / Curso</th>
+            <th>Nivel</th>
+            <th class="text-right">Monto ($)</th>
+            <th class="text-right">Monto (Bs.)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% 
+           // Tomamos el monto exacto registrado en el pago de la base de datos
+           let montoPagoUSD = Number(pago.monto_usd || 25); 
+           let montoPagoBs = Number(pago.monto_ves || (montoPagoUSD * tasaBCV));
+        %>
+        <% hermanos.forEach((hermano, index) => { %>
+            <% 
+               // Si hay varios hermanos, el monto del recibo se muestra en el primero o se divide, 
+               // pero respetando el total exacto que pagó el representante.
+               let montoUSD = index === 0 ? montoPagoUSD : 0; 
+               let montoBs = index === 0 ? montoPagoBs : 0;
+            %>
+            <tr>
+                <td><strong><%= hermano.nombre_estudiante %></strong></td>
+                <td><%= hermano.instrumento || hermano.curso || 'Cátedra General' %></td>
+                <td><%= hermano.nivel || 'General' %></td>
+                <td class="text-right">$<%= Number(montoUSD).toFixed(2) %></td>
+                <td class="text-right"><%= Number(montoBs).toFixed(2) %> Bs.</td>
+            </tr>
+        <% }); %>
+    </tbody>
+</table>
+            <!-- DETALLES Y TOTALES -->
+            <div class="bottom-section">
+                <div class="payment-notes">
+                    <p><strong>Concepto:</strong> <%= pago.concepto || 'Cancelación de servicios educativos / inscripción' %></p>
+                    <p style="margin-top: 4px;"><strong>Referencia de Pago:</strong> <%= pago.referencia || pago.comprobante || 'N/A' %> (<%= pago.metodo_pago || 'Pago Móvil / Transferencia' %>)</p>
+                    <p style="margin-top: 4px;"><strong>Tasa Oficial BCV:</strong> <%= Number(tasaBCV).toFixed(2) %> Bs/$</p>
+                </div>
+
+               <div class="totals-box">
+    <div class="totals-row">
+        <span>Subtotal:</span>
+        <span>$<%= montoPagoUSD.toFixed(2) %></span>
+    </div>
+    <div class="totals-row">
+        <span>Servicio Educativo:</span>
+        <span>Exento (IVA 0%)</span>
+    </div>
+    <div class="totals-row final">
+        <span>TOTAL PAGADO:</span>
+        <span><%= montoPagoBs.toFixed(2) %> Bs.</span>
+    </div>
+</div>
+
+            <!-- PIE DE PÁGINA / FIRMA -->
+            <div class="footer-info">
+                <div>
+                    <p>Documento emitido bajo normativas administrativas internas.</p>
+                    <p><strong>ORIGINAL CLIENTE</strong> &bull; Sin tachaduras ni enmiendas.</p>
+                </div>
+                <div style="text-align: center;">
+                    <div class="signature-line">
+                        Administración / Dirección
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
